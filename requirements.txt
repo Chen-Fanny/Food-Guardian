@@ -1,0 +1,22 @@
+# ==============================================================================
+# Food Guardian Project Dependencies (Proposal / Initial Stage)
+# ==============================================================================
+
+# Web Interface & Interactive Dashboard
+streamlit>=1.32.0
+
+# Data Manipulation & Analytics
+pandas>=2.2.0
+numpy>=1.26.0
+
+# LLM Integration & Structured Tools (Planned)
+openai>=1.14.0
+pydantic>=2.6.0
+python-dotenv>=1.0.1
+
+# Interactive Visualizations
+plotly>=5.20.0
+
+# Quality Assurance & Testing
+pytest>=8.1.0
+flake8>=7.0.0

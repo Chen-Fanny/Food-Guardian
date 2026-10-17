@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "version": "1.0.0",
+  "description": "Sample food knowledge base for Food Guardian AI Agent",
+  "categories": [
+    {
+      "id": "dairy",
+      "name": "Dairy & Eggs",
+      "storage_tips": "Store on middle shelves; avoid refrigerator door due to temperature fluctuations."
+    },
+    {
+      "id": "produce",
+      "name": "Fruits & Vegetables",
+      "storage_tips": "Keep ethylene-producing fruits (e.g., bananas, apples) separate from ethylene-sensitive vegetables."
+    },
+    {
+      "id": "meat_poultry",
+      "name": "Meat & Poultry",
+      "storage_tips": "Store on the bottom shelf in sealed containers to prevent cross-contamination."
+    },
+    {
+      "id": "pantry",
+      "name": "Pantry & Dry Goods",
+      "storage_tips": "Store in airtight containers in a cool, dark, dry place."
+    }
+  ],
+  "items": [
+    {
+      "id": "milk_whole",
+      "name": "Whole Milk",
+      "category": "dairy",
+      "default_unit": "ml",
+      "storage_method": "refrigerated",
+      "typical_shelf_life_days": 7,
+      "date_label_type": "use_by",
+      "spoilage_signs": ["Sour odor", "Curdling", "Yellowish discoloration"],
+      "waste_reduction_tips": "Can be frozen before expiration for use in baking or cooking."
+    },
+    {
+      "id": "spinach",
+      "name": "Fresh Spinach",
+      "category": "produce",
+      "default_unit": "g",
+      "storage_method": "refrigerated",
+      "typical_shelf_life_days": 5,
+      "date_label_type": "best_before",
+      "spoilage_signs": ["Wilting", "Slimy leaves", "Dark liquid formation"],
+      "waste_reduction_tips": "Wilted spinach can still be used in soups, stews, or smoothies."
+    },
+    {
+      "id": "eggs",
+      "name": "Eggs",
+      "category": "dairy",
+      "default_unit": "pieces",
+      "storage_method": "refrigerated",
+      "typical_shelf_life_days": 28,
+      "date_label_type": "best_before",
+      "spoilage_signs": ["Floats in water bowl test", "Sulfuric odor when cracked"],
+      "waste_reduction_tips": "Use older eggs for hard-boiling as they peel more easily."
+    },
+    {
+      "id": "chicken_breast",
+      "name": "Chicken Breast",
+      "category": "meat_poultry",
+      "default_unit": "g",
+      "storage_method": "refrigerated",
+      "typical_shelf_life_days": 2,
+      "date_label_type": "use_by",
+      "spoilage_signs": ["Slimy texture", "Sour or ammonia-like smell", "Dull gray color"],
+      "waste_reduction_tips": "Freeze immediately if not cooking within 48 hours."
+    }
+  ]
+}

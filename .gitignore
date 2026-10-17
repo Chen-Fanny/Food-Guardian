@@ -1,0 +1,46 @@
+# Python Bytecode and Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+
+# Environment Variables & Secrets
+.env
+.env.local
+*.env
+
+# SQLite Databases & Local Storage
+*.db
+*.sqlite
+*.sqlite3
+data/database/*.db
+data/database/*.sqlite
+data/database/*.sqlite3
+
+# IDE & Editor Files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Streamlit Local Runtime
+.streamlit/secrets.toml
+
+# Logs
+*.log
+logs/
