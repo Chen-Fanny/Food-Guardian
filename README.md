@@ -251,19 +251,6 @@ pytest tests/
   - [ ] 進行 Baseline 比較與測試
   - [ ] 製作 Final PPT、Demo 影片與最終文件
 
-## 👥 組員分工
-
-本專題共 **5 位組員**。以下以 A～E 表示正式分工角色，後續可再補上組員姓名。
-
-| 成員 | 階段／角色 | 主要負責工作 |
-|---|---|---|
-| **A（Proposal）** | 研究文件與 GitHub 初始化 | Proposal Document、建立 GitHub Repository 與 README 初版 |
-| **B（Proposal／Final）** | 簡報與技術文件統整 | Proposal PPT、`DESIGN.md` 初版、Final PPT 與 Final Video 統整及上傳 |
-| **C（Final）** | 系統介面與資料庫 | Streamlit、SQLite、食材管理、日期提醒、系統整合與 `README.md` 後續更新 |
-| **D（Final）** | AI Agent 與推薦 | LLM、Tool Calling、食譜推薦、食品知識庫與 Agent 功能測試 |
-| **E（Final）** | 資料分析與實驗 | Pandas、Dashboard、Baseline 比較、Evaluation Metrics、Experiments、Conclusion |
-
-C、D、E 分別提供自己的程式、展示素材與技術說明；B 統整 Final PPT 和影片。全體組員共同檢查最終繳交內容。以上為**預定分工**，實際貢獻將依完成情況更新。
 
 ## 📄 授權
 
