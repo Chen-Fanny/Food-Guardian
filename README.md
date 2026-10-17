@@ -7,7 +7,6 @@
 [![Framework](https://img.shields.io/badge/UI-Streamlit-red.svg)](https://streamlit.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> **專案狀態：Proposal 階段。** 下列功能多數仍在規劃或開發中；本 README 不代表系統已完成，也不包含尚未產生的實驗結果。
 
 ## 📌 目錄
 
