@@ -1,24 +1,26 @@
-"""
-Helper utility functions for date calculations, string formatters, and validation.
-[Status: Under Development]
-"""
+"""Shared ISO date parsing and remaining-day calculations."""
 
-from datetime import datetime, date
-from typing import Union
+from datetime import date
+from typing import Optional, Union
 
 
 def parse_date(date_str: str) -> date:
-    """
-    Parse ISO formatted date string (YYYY-MM-DD).
-    """
-    return datetime.strptime(date_str, "%Y-%m-%d").date()
+    """Parse a calendar date in exactly YYYY-MM-DD format."""
+    if not isinstance(date_str, str):
+        raise ValueError("日期必須為 YYYY-MM-DD。")
+    result = date.fromisoformat(date_str)
+    if result.isoformat() != date_str:
+        raise ValueError("日期必須為 YYYY-MM-DD。")
+    return result
 
 
-def calculate_days_remaining(target_date: Union[str, date]) -> int:
-    """
-    Calculate days remaining until target date from today.
-    """
+def calculate_days_remaining(
+    target_date: Optional[Union[str, date]],
+    today: Optional[date] = None,
+) -> Optional[int]:
+    """Return calendar-day difference, or None for an unset date."""
+    if target_date is None:
+        return None
     if isinstance(target_date, str):
         target_date = parse_date(target_date)
-    today = date.today()
-    return (target_date - today).days
+    return (target_date - (today if today is not None else date.today())).days

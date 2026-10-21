@@ -1,5 +1,5 @@
 -- ==============================================================================
--- Food Guardian Database Schema (Planned / Initial Specification)
+-- Food Guardian Database Schema (Inventory & Reminder Module)
 -- Target DBMS: SQLite 3
 -- ==============================================================================
 
@@ -8,11 +8,12 @@ CREATE TABLE IF NOT EXISTS inventory_items (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     category TEXT NOT NULL,
-    quantity REAL NOT NULL,
+    quantity REAL NOT NULL CHECK(quantity >= 0),
     unit TEXT NOT NULL,
     purchase_date TEXT NOT NULL,
-    expiry_date TEXT NOT NULL,
-    date_label_type TEXT CHECK(date_label_type IN ('use_by', 'best_before', 'opened_on')),
+    expiry_date TEXT,
+    date_label_type TEXT CHECK(date_label_type IN ('use_by', 'best_before')),
+    opened_date TEXT,
     storage_location TEXT CHECK(storage_location IN ('refrigerator', 'freezer', 'pantry')),
     status TEXT DEFAULT 'active' CHECK(status IN ('active', 'consumed', 'wasted')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

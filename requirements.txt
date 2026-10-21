@@ -3,7 +3,7 @@
 # ==============================================================================
 
 # Web Interface & Interactive Dashboard
-streamlit>=1.32.0
+streamlit>=1.66.0  # Verified native dialog state, responsive containers and theme
 
 # Data Manipulation & Analytics
 pandas>=2.2.0

@@ -1,54 +1,76 @@
 """
 Main Streamlit Application Entrypoint.
 Food Guardian: A Knowledge-Guided AI Agent for Smart Food Inventory Management and Household Food Waste Reduction.
-[Status: Proposal Stage / Scaffold]
+[Status: Inventory & Reminder validation; other modules planned]
 """
 
-import streamlit as st
+# Support the documented `streamlit run src/ui/app.py` entrypoint.
+import sys
+from pathlib import Path
+import sqlite3
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+import streamlit as st  # noqa: E402
+
+from src.database.db_manager import DatabaseManager  # noqa: E402
+from src.services.inventory_service import InventoryService  # noqa: E402
+from src.ui.components.inventory_view import render_inventory_view  # noqa: E402
+from src.ui.components.reminders_view import render_reminders_view  # noqa: E402
+from src.ui.components.agent_chat_view import render_agent_chat_view  # noqa: E402
+from src.ui.components.analytics_view import render_analytics_view  # noqa: E402
+from src.ui.components.home_view import render_home  # noqa: E402
+from src.ui.styles import NAV_PAGES, apply_styles, show_error, show_flash  # noqa: E402
+
+
+from src.ui.components import item_dialogs  # noqa: E402
 
 
 def main():
-    st.set_page_config(
-        page_title="Food Guardian | Proposal Stage",
-        page_icon="🥑",
-        layout="wide",
-    )
-
-    st.title("🥑 Food Guardian")
-    st.subheader(
-        "A Knowledge-Guided AI Agent for Smart Food Inventory Management and Household Food Waste Reduction"
-    )
-
-    st.info(
-        "ℹ️ **Current Status: Project Proposal & Architecture Setup**\n\n"
-        "The application modules are currently under active development. "
-        "Please refer to `README.md` and project documentation for system architecture and development milestones."
-    )
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.markdown("### 📋 Planned System Capabilities")
+    st.set_page_config(page_title="Food Guardian", page_icon="🥑", layout="wide")
+    apply_styles()
+    with st.sidebar:
         st.markdown(
-            """
-            - **Inventory Management**: Track and manage household food items (CRUD).
-            - **Date Reminders**: Intelligent tracking of expiration and *Use By* vs *Best Before* labels.
-            - **AI Agent Cooking Advisor**: LLM tool-calling agent to recommend recipes using expiring ingredients.
-            - **Food Knowledge Retrieval**: Domain knowledge on proper storage methods and shelf-life extension.
-            - **Waste Analytics**: Data-driven insights on food consumption and waste reduction trends.
-            """
+            '<div class="fg-brand">🥑 Food Guardian</div>', unsafe_allow_html=True
         )
-
-    with col2:
-        st.markdown("### 🛠️ Architecture & Tech Stack")
-        st.markdown(
-            """
-            - **Frontend**: Streamlit
-            - **Data Layer**: SQLite & Pandas
-            - **AI Engine**: LLM with Tool Calling Architecture
-            - **Knowledge Source**: Structured JSON Food Knowledge Base
-            """
+        st.caption("家中的食材，好好管理。")
+        page = st.radio(
+            "導覽",
+            NAV_PAGES,
+            key="navigation",
+            label_visibility="collapsed",
+            on_change=item_dialogs.dismiss_dialog,
         )
+        st.divider()
+        st.caption("課程專題 · 開發中")
+        st.caption("AI 與浪費統計 · Under Development")
+    show_flash()
+    if page in NAV_PAGES[:3]:
+        try:
+            db = DatabaseManager()
+            db.initialize_database()
+        except (sqlite3.Error, OSError) as exc:
+            show_error(exc, action="初始化資料")
+            return
+        service = InventoryService(db)
+        try:
+            if page == NAV_PAGES[0]:
+                render_home(service)
+            elif page == NAV_PAGES[1]:
+                render_inventory_view(service)
+            else:
+                render_reminders_view(service)
+            item_dialogs.render_pending_dialog(service)
+        except (ValueError, LookupError, sqlite3.Error, OSError) as exc:
+            show_error(exc)
+            if st.button("重新載入"):
+                st.rerun()
+    elif page == "🤖 AI 餐點推薦":
+        render_agent_chat_view()
+    elif page == "📊 浪費統計":
+        render_analytics_view()
 
 
 if __name__ == "__main__":
