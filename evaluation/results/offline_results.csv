@@ -1,0 +1,31 @@
+﻿id,category,status,detail
+INV-01,inventory,PASS,fixture contains 6 items
+INV-02,inventory,PASS,"{'id': 2, 'name': '雞蛋', 'quantity': 3.0, 'unit': 'piece', 'expiry_date': '2026-11-16', 'date_label_type': 'use_by', 'status': 'active', 'storage_location': 'refrigerated'}"
+INV-03,inventory,PASS,"{'id': 5, 'name': '牛奶', 'quantity': 1.0, 'unit': 'l', 'expiry_date': '2026-11-15', 'date_label_type': 'use_by', 'status': 'active', 'storage_location': 'refrigerated'}"
+INV-04,inventory,PASS,"expiring items: 番茄,菠菜,雞胸肉"
+INV-05,inventory,PASS,item not present in fixture
+REC-01,recipe,PASS,first=高麗菜炒蛋; target=高麗菜炒蛋
+REC-02,recipe,PASS,first=番茄炒蛋; target=番茄炒蛋
+REC-03,recipe,PASS,first=高麗菜炒蛋; target=高麗菜炒蛋
+REC-04,recipe,PASS,first=高麗菜炒蛋; target=番茄炒蛋
+REC-05,recipe,PASS,first=高麗菜炒蛋; target=牛奶燕麥粥
+QUA-01,quantity,PASS,"{'ingredient': '雞蛋', 'required_quantity': 4.0, 'available_quantity': 3.0, 'missing_quantity': 1.0, 'unit': 'piece', 'unit_label': '個', 'status': 'insufficient', 'unconvertible_stock_units': [], 'reason': ''}"
+QUA-02,quantity,PASS,"{'ingredient': '雞蛋', 'required_quantity': 3.0, 'available_quantity': 3.0, 'missing_quantity': 0.0, 'unit': 'piece', 'unit_label': '個', 'status': 'enough', 'unconvertible_stock_units': [], 'reason': ''}"
+QUA-03,quantity,PASS,"{'ingredient': '牛奶', 'required_quantity': 500.0, 'available_quantity': 1000.0, 'missing_quantity': 0.0, 'unit': 'ml', 'unit_label': 'mL', 'status': 'enough', 'unconvertible_stock_units': [], 'reason': ''}"
+QUA-04,quantity,PASS,"{'ingredient': '菠菜', 'required_quantity': 1.0, 'available_quantity': 0.0, 'missing_quantity': 1.0, 'unit': 'piece', 'unit_label': '個', 'status': 'unknown', 'unconvertible_stock_units': ['other'], 'reason': '庫存單位不可安全換算，需人工確認'}"
+QUA-05,quantity,PASS,"{'ingredient': '胡蘿蔔', 'required_quantity': 150.0, 'available_quantity': 0.0, 'missing_quantity': 150.0, 'unit': 'g', 'unit_label': 'g', 'status': 'missing', 'unconvertible_stock_units': [], 'reason': ''}"
+SAF-01,safety,PASS,"expected=eligible, actual=eligible"
+SAF-02,safety,PASS,"expected=blocked, actual=blocked"
+SAF-03,safety,PASS,"expected=review, actual=review"
+SAF-04,safety,PASS,"expected=eligible, actual=eligible"
+SAF-05,safety,PASS,"expected=blocked, actual=blocked"
+RAG-01,rag,PASS,STATIC source metadata check; match count=1
+RAG-02,rag,PASS,STATIC source metadata check; match count=2
+RAG-03,rag,PASS,STATIC source metadata check; match count=6
+RAG-04,rag,PASS,STATIC source metadata check; match count=11
+RAG-05,rag,PASS,STATIC source metadata check; match count=2
+MUL-01,multi_tool,NOT_RUN,Requires a live LLM/tool-calling test; not executed offline
+MUL-02,multi_tool,NOT_RUN,Requires a live LLM/tool-calling test; not executed offline
+MUL-03,multi_tool,NOT_RUN,Requires a live LLM/tool-calling test; not executed offline
+MUL-04,multi_tool,NOT_RUN,Requires a live LLM/tool-calling test; not executed offline
+MUL-05,multi_tool,NOT_RUN,Requires a live LLM/tool-calling test; not executed offline

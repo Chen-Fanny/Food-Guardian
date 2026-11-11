@@ -1,0 +1,429 @@
+[
+  {
+    "id": "INV-01",
+    "category": "inventory",
+    "prompt": "列出目前所有有效食材。",
+    "expected_tools": [
+      "query_active_inventory_tool"
+    ],
+    "offline_metric": "inventory",
+    "expected": {
+      "min_count": 6
+    }
+  },
+  {
+    "id": "INV-02",
+    "category": "inventory",
+    "prompt": "冰箱中有幾顆雞蛋？",
+    "expected_tools": [
+      "query_active_inventory_tool"
+    ],
+    "offline_metric": "inventory",
+    "expected": {
+      "name": "雞蛋",
+      "quantity": 3
+    }
+  },
+  {
+    "id": "INV-03",
+    "category": "inventory",
+    "prompt": "目前有多少牛奶？",
+    "expected_tools": [
+      "query_active_inventory_tool"
+    ],
+    "offline_metric": "inventory",
+    "expected": {
+      "name": "牛奶",
+      "quantity": 1,
+      "unit": "l"
+    }
+  },
+  {
+    "id": "INV-04",
+    "category": "inventory",
+    "prompt": "請列出即將到期的食材。",
+    "expected_tools": [
+      "query_expiring_items_tool"
+    ],
+    "offline_metric": "inventory",
+    "expected": {
+      "expires_within_days": 3,
+      "contains": [
+        "番茄",
+        "菠菜",
+        "雞胸肉"
+      ]
+    }
+  },
+  {
+    "id": "INV-05",
+    "category": "inventory",
+    "prompt": "庫存中有不存在的食材「奇異果」嗎？",
+    "expected_tools": [
+      "query_active_inventory_tool"
+    ],
+    "offline_metric": "inventory",
+    "expected": {
+      "absent": "奇異果"
+    }
+  },
+  {
+    "id": "REC-01",
+    "category": "recipe",
+    "prompt": "兩人份不想買菜，推薦能直接做的料理。",
+    "expected_tools": [
+      "recommend_recipes_for_servings_tool"
+    ],
+    "offline_metric": "recipe",
+    "expected": {
+      "mode": "ready_now",
+      "recipe": "高麗菜炒蛋"
+    }
+  },
+  {
+    "id": "REC-02",
+    "category": "recipe",
+    "prompt": "兩人份優先使用快到期番茄。",
+    "expected_tools": [
+      "recommend_recipes_for_servings_tool"
+    ],
+    "offline_metric": "recipe",
+    "expected": {
+      "mode": "expiry_first",
+      "recipe": "番茄炒蛋"
+    }
+  },
+  {
+    "id": "REC-03",
+    "category": "recipe",
+    "prompt": "比較兩人份不同料理的平衡排序。",
+    "expected_tools": [
+      "recommend_recipes_for_servings_tool"
+    ],
+    "offline_metric": "recipe",
+    "expected": {
+      "mode": "balanced",
+      "recipe": "高麗菜炒蛋"
+    }
+  },
+  {
+    "id": "REC-04",
+    "category": "recipe",
+    "prompt": "兩人份番茄炒蛋缺什麼？",
+    "expected_tools": [
+      "recommend_recipes_for_servings_tool"
+    ],
+    "offline_metric": "recipe",
+    "expected": {
+      "mode": "balanced",
+      "recipe": "番茄炒蛋"
+    }
+  },
+  {
+    "id": "REC-05",
+    "category": "recipe",
+    "prompt": "兩人份牛奶燕麥粥還缺什麼？",
+    "expected_tools": [
+      "recommend_recipes_for_servings_tool"
+    ],
+    "offline_metric": "recipe",
+    "expected": {
+      "mode": "balanced",
+      "recipe": "牛奶燕麥粥"
+    }
+  },
+  {
+    "id": "QUA-01",
+    "category": "quantity",
+    "prompt": "兩人份番茄炒蛋缺幾顆雞蛋？",
+    "expected_tools": [
+      "recommend_recipes_for_servings_tool"
+    ],
+    "offline_metric": "quantity",
+    "expected": {
+      "recipe": "番茄炒蛋",
+      "ingredient": "雞蛋",
+      "status": "insufficient",
+      "missing": 1
+    }
+  },
+  {
+    "id": "QUA-02",
+    "category": "quantity",
+    "prompt": "兩人份高麗菜炒蛋材料夠嗎？",
+    "expected_tools": [
+      "recommend_recipes_for_servings_tool"
+    ],
+    "offline_metric": "quantity",
+    "expected": {
+      "recipe": "高麗菜炒蛋",
+      "ingredient": "雞蛋",
+      "status": "enough",
+      "missing": 0
+    }
+  },
+  {
+    "id": "QUA-03",
+    "category": "quantity",
+    "prompt": "牛奶一公升，兩人份燕麥粥的牛奶夠嗎？",
+    "expected_tools": [
+      "recommend_recipes_for_servings_tool"
+    ],
+    "offline_metric": "quantity",
+    "expected": {
+      "recipe": "牛奶燕麥粥",
+      "ingredient": "牛奶",
+      "status": "enough",
+      "available": 1000
+    }
+  },
+  {
+    "id": "QUA-04",
+    "category": "quantity",
+    "prompt": "菠菜的庫存單位無法換算時應如何處理？",
+    "expected_tools": [
+      "recommend_recipes_for_servings_tool"
+    ],
+    "offline_metric": "quantity",
+    "expected": {
+      "recipe": "菠菜炒蛋",
+      "ingredient": "菠菜",
+      "status": "unknown"
+    }
+  },
+  {
+    "id": "QUA-05",
+    "category": "quantity",
+    "prompt": "兩人份番茄蔬菜湯缺多少胡蘿蔔？",
+    "expected_tools": [
+      "recommend_recipes_for_servings_tool"
+    ],
+    "offline_metric": "quantity",
+    "expected": {
+      "recipe": "番茄蔬菜湯",
+      "ingredient": "胡蘿蔔",
+      "status": "missing",
+      "missing": 150
+    }
+  },
+  {
+    "id": "SAF-01",
+    "category": "safety",
+    "prompt": "雞胸肉的 Use By 日期快到了，能自動列入候選嗎？",
+    "expected_tools": [
+      "validate_inventory_safety_tool"
+    ],
+    "offline_metric": "safety",
+    "expected": {
+      "item": {
+        "name": "雞胸肉",
+        "expiry_days": 3,
+        "date_label_type": "use_by"
+      },
+      "status": "eligible"
+    }
+  },
+  {
+    "id": "SAF-02",
+    "category": "safety",
+    "prompt": "雞胸肉已經超過 Use By 日期，能推薦嗎？",
+    "expected_tools": [
+      "validate_inventory_safety_tool"
+    ],
+    "offline_metric": "safety",
+    "expected": {
+      "item": {
+        "name": "雞胸肉",
+        "expiry_days": -1,
+        "date_label_type": "use_by"
+      },
+      "status": "blocked"
+    }
+  },
+  {
+    "id": "SAF-03",
+    "category": "safety",
+    "prompt": "牛奶超過 Best Before 日期怎麼處理？",
+    "expected_tools": [
+      "validate_inventory_safety_tool"
+    ],
+    "offline_metric": "safety",
+    "expected": {
+      "item": {
+        "name": "牛奶",
+        "expiry_days": -1,
+        "date_label_type": "best_before"
+      },
+      "status": "review"
+    }
+  },
+  {
+    "id": "SAF-04",
+    "category": "safety",
+    "prompt": "一項食材沒有到期日期，能保證安全嗎？",
+    "expected_tools": [
+      "validate_inventory_safety_tool"
+    ],
+    "offline_metric": "safety",
+    "expected": {
+      "item": {
+        "name": "雞蛋",
+        "expiry_days": null,
+        "date_label_type": null
+      },
+      "status": "eligible"
+    }
+  },
+  {
+    "id": "SAF-05",
+    "category": "safety",
+    "prompt": "番茄確認已變質還能推薦嗎？",
+    "expected_tools": [
+      "validate_inventory_safety_tool"
+    ],
+    "offline_metric": "safety",
+    "expected": {
+      "item": {
+        "name": "番茄",
+        "expiry_days": 2,
+        "date_label_type": "use_by",
+        "known_spoiled": true
+      },
+      "status": "blocked"
+    }
+  },
+  {
+    "id": "RAG-01",
+    "category": "rag",
+    "prompt": "生雞胸肉冷藏可以保存多久？請附來源。",
+    "expected_tools": [
+      "search_food_knowledge"
+    ],
+    "offline_metric": "rag_source_readiness",
+    "expected": {
+      "keywords": [
+        "chicken",
+        "poultry",
+        "雞"
+      ]
+    }
+  },
+  {
+    "id": "RAG-02",
+    "category": "rag",
+    "prompt": "冷凍雞肉怎麼安全解凍？",
+    "expected_tools": [
+      "search_food_knowledge"
+    ],
+    "offline_metric": "rag_source_readiness",
+    "expected": {
+      "keywords": [
+        "thaw",
+        "解凍"
+      ]
+    }
+  },
+  {
+    "id": "RAG-03",
+    "category": "rag",
+    "prompt": "Use By 和 Best Before 差在哪裡？",
+    "expected_tools": [
+      "search_food_knowledge"
+    ],
+    "offline_metric": "rag_source_readiness",
+    "expected": {
+      "keywords": [
+        "date",
+        "日期",
+        "use by"
+      ]
+    }
+  },
+  {
+    "id": "RAG-04",
+    "category": "rag",
+    "prompt": "冷藏溫度應維持多少？",
+    "expected_tools": [
+      "search_food_knowledge"
+    ],
+    "offline_metric": "rag_source_readiness",
+    "expected": {
+      "keywords": [
+        "temperature",
+        "冷藏",
+        "4"
+      ]
+    }
+  },
+  {
+    "id": "RAG-05",
+    "category": "rag",
+    "prompt": "如何避免生熟食交叉污染？",
+    "expected_tools": [
+      "search_food_knowledge"
+    ],
+    "offline_metric": "rag_source_readiness",
+    "expected": {
+      "keywords": [
+        "cross",
+        "交叉",
+        "生熟"
+      ]
+    }
+  },
+  {
+    "id": "MUL-01",
+    "category": "multi_tool",
+    "prompt": "找出快到期食材，再推薦兩人份的晚餐。",
+    "expected_tools": [
+      "query_expiring_items_tool",
+      "recommend_recipes_for_servings_tool"
+    ],
+    "offline_metric": "tool_selection",
+    "expected": {}
+  },
+  {
+    "id": "MUL-02",
+    "category": "multi_tool",
+    "prompt": "先確認雞胸肉日期狀態，再告訴我如何解凍並附來源。",
+    "expected_tools": [
+      "validate_inventory_safety_tool",
+      "search_food_knowledge"
+    ],
+    "offline_metric": "tool_selection",
+    "expected": {}
+  },
+  {
+    "id": "MUL-03",
+    "category": "multi_tool",
+    "prompt": "列出庫存，依立即可做模式推薦三道料理。",
+    "expected_tools": [
+      "query_active_inventory_tool",
+      "recommend_recipes_for_servings_tool"
+    ],
+    "offline_metric": "tool_selection",
+    "expected": {}
+  },
+  {
+    "id": "MUL-04",
+    "category": "multi_tool",
+    "prompt": "先查菠菜是否還在庫存，再查菠菜保存知識來源。",
+    "expected_tools": [
+      "query_active_inventory_tool",
+      "search_food_knowledge"
+    ],
+    "offline_metric": "tool_selection",
+    "expected": {}
+  },
+  {
+    "id": "MUL-05",
+    "category": "multi_tool",
+    "prompt": "為兩人份推薦使用快到期食材的料理，並確認雞胸肉是否可列為候選。",
+    "expected_tools": [
+      "recommend_recipes_for_servings_tool",
+      "validate_inventory_safety_tool"
+    ],
+    "offline_metric": "tool_selection",
+    "expected": {}
+  }
+]

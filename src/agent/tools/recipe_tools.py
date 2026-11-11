@@ -1,15 +1,6 @@
-"""
-Recipe Tools for AI Agent.
-Enables the agent to generate and filter recipes prioritizing expiring ingredients.
-[Status: Planned]
-"""
+"""Read-only adapter for ranked recipes."""
+from typing import Any, Dict, List, Optional
+from src.services.recipe_service import RecipeService
 
-from typing import Any, Dict, List
-
-
-def match_recipes_from_inventory(ingredient_list: List[str]) -> List[Dict[str, Any]]:
-    """
-    Tool function: Match available ingredients against recipe knowledge base or generate recipe suggestions.
-    [Planned - To be implemented during development phase]
-    """
-    raise NotImplementedError("Tool match_recipes_from_inventory is under development.")
+def match_recipes_from_inventory(ingredient_list: List[str], *, inventory_items: Optional[List[Dict[str, Any]]]=None, recipe_service: Optional[RecipeService]=None) -> List[Dict[str,Any]]:
+    return (recipe_service or RecipeService()).recommend_recipes(ingredient_list,inventory_items=inventory_items)

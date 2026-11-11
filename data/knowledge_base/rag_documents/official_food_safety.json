@@ -1,0 +1,90 @@
+[
+  {
+    "id": "tfda-cold-001",
+    "title": "冷凍食品並非無限期保存",
+    "content": "冷凍食品即使在低溫保存，仍可能隨保存時間出現風味、質地及品質變化。應核對包裝有效日期及保存條件，不可把冷凍等同永久可食。",
+    "source_label": "衛福部食品藥物管理署｜冷凍≠萬年不壞",
+    "source_url": "https://www.fda.gov.tw/TC/siteListContent.aspx?id=51248&sid=13694",
+    "verified": true
+  },
+  {
+    "id": "tfda-thaw-002",
+    "title": "冷凍肉類安全解凍方法",
+    "content": "食品解凍可優先採冷藏解凍；適當密封的冷水流水解凍與微波解凍也可視食品情況使用，這些快速解凍方式需配合立即烹調。避免長時間室溫解凍及使用熱水解凍。",
+    "source_label": "衛福部食品藥物管理署｜冷凍食品保存與解凍",
+    "source_url": "https://www.fda.gov.tw/TC/siteListContent.aspx?id=51248&sid=13694",
+    "verified": true
+  },
+  {
+    "id": "tfda-cross-003",
+    "title": "冷藏食材分層與生熟分離",
+    "content": "食材分類保存，生食與熟食分開；生肉放在熟食下層並妥善密封，避免肉汁污染即食食物。保存容器可標記日期並依先進先出原則管理。",
+    "source_label": "衛福部食品藥物管理署｜食品保存與解凍技巧",
+    "source_url": "https://www.fda.gov.tw/TC/siteListContent.aspx?id=51248&sid=13694",
+    "verified": true
+  },
+  {
+    "id": "tfda-date-004",
+    "title": "臺灣包裝食品有效日期與保存期限",
+    "content": "臺灣食藥署的市售包裝食品有效日期評估指引指出：有效日期是在特定保存條件下可維持產品價值的最終時間點；保存期限則是在指定保存條件下的時間範圍。期限訂定受原料、製程、運輸及保存環境影響。不可只依系統自行推算天數替代原包裝標示。",
+    "source_label": "衛福部食藥署｜市售包裝食品有效日期評估指引",
+    "source_url": "https://foodlabel.fda.gov.tw/FdaFrontEndApp/OtherData/Edit?ClType=2&SystemId=39148789-b32f-4e57-8406-6e7d9145f013",
+    "verified": true
+  },
+  {
+    "id": "tfda-bestbefore-005",
+    "title": "Use By 與 Best Before 不同",
+    "content": "食藥署指引說明，use by 或 expiry date 與國內有效日期概念相近；best before 或賞味期限主要反映最佳品質，過了這個日期不必然表示食品立即不安全。臺灣進口食品的實際中文有效日期標示仍須符合本地規定，不可直接把兩種標示互換。",
+    "source_label": "衛福部食藥署｜市售包裝食品有效日期評估指引",
+    "source_url": "https://foodlabel.fda.gov.tw/FdaFrontEndApp/OtherData/Edit?ClType=2&SystemId=39148789-b32f-4e57-8406-6e7d9145f013",
+    "verified": true
+  },
+  {
+    "id": "us-temp-006",
+    "title": "家用冷藏與冷凍建議溫度",
+    "content": "FoodSafety.gov 建議冷藏庫溫度保持在攝氏 4 度或以下，冷凍庫在攝氏負 18 度或以下，並使用溫度計確認。冷藏與冷凍不能補救已受污染或保存不當的食材。",
+    "source_label": "FoodSafety.gov｜4 Steps to Food Safety",
+    "source_url": "https://www.foodsafety.gov/keep-food-safe/4-steps-to-food-safety",
+    "verified": true
+  },
+  {
+    "id": "us-2h-007",
+    "title": "易腐敗食物兩小時冷藏原則",
+    "content": "FoodSafety.gov 建議易腐敗食品應在室溫放置 2 小時內冷藏；若周遭氣溫高於攝氏 32 度，則應在 1 小時內冷藏。這是一般食品安全原則，個別食品仍需依標示與條件處理。",
+    "source_label": "FoodSafety.gov｜4 Steps to Food Safety",
+    "source_url": "https://www.foodsafety.gov/keep-food-safe/4-steps-to-food-safety",
+    "verified": true
+  },
+  {
+    "id": "us-cross-008",
+    "title": "生肉與蔬菜避免交叉污染",
+    "content": "FoodSafety.gov 建議將生肉、家禽、海鮮與即食蔬果分開處理，使用不同砧板及器具，接觸生肉的器具應清潔；生肉冷藏時需密封以避免汁液滴落污染其他食物。",
+    "source_label": "FoodSafety.gov｜4 Steps to Food Safety",
+    "source_url": "https://www.foodsafety.gov/keep-food-safe/4-steps-to-food-safety",
+    "verified": true
+  },
+  {
+    "id": "us-chicken-009",
+    "title": "生雞肉冷藏保存時間參考",
+    "content": "FoodSafety.gov 的冷藏保存時間表對生雞肉（整隻或分切）提供攝氏 4 度或以下冷藏 1 至 2 天的參考範圍。這是符合指定條件的通用參考值，非每包雞肉的保證期限；請優先核對原包裝有效日期、保存狀態與冷鏈。",
+    "source_label": "FoodSafety.gov｜Cold Food Storage Chart",
+    "source_url": "https://www.foodsafety.gov/food-safety-charts/cold-food-storage-charts",
+    "verified": true
+  },
+  {
+    "id": "us-leftovers-010",
+    "title": "熟食剩菜冷藏與再加熱",
+    "content": "FoodSafety.gov 指出一般熟食剩菜應儘速冷藏，建議在 4 天內使用，重新加熱需達到攝氏 74 度。使用淺容器冷卻有助於加速降溫。",
+    "source_label": "FoodSafety.gov｜People at Risk of Food Poisoning",
+    "source_url": "https://www.foodsafety.gov/people-at-risk",
+    "verified": true
+  },
+  {
+    "id": "us-no-safety-from-looks-011",
+    "title": "不能只靠外觀判定食品絕對安全",
+    "content": "食品安全判斷不能只依外觀、氣味或記錄日期；變質或受污染食物可能帶有無法以外觀判定的風險。系統提供的保存期限或提醒不等於安全食用保證，遇保存不明、冷鏈異常或變質疑慮時應避免食用。",
+    "source_label": "FoodSafety.gov｜4 Steps to Food Safety",
+    "source_url": "https://www.foodsafety.gov/keep-food-safe/4-steps-to-food-safety",
+    "verified": true
+  }
+]

@@ -1,0 +1,187 @@
+{
+  "version": "1.0",
+  "description": "固定示範食譜；ingredient_quantities 為測試用假設，非經驗證的真實食譜份量。",
+  "recipes": [
+    {
+      "id": "r01",
+      "title": "番茄炒蛋",
+      "ingredients": [
+        "番茄",
+        "雞蛋"
+      ],
+      "optional_ingredients": [
+        "蔥"
+      ],
+      "instructions": [
+        "洗淨並切塊番茄。",
+        "將雞蛋充分炒熟，加入番茄炒軟。",
+        "調味後趁熱食用。"
+      ],
+      "base_servings": 2,
+      "ingredient_quantities": [
+        {
+          "name": "番茄",
+          "quantity": 2,
+          "unit": "piece"
+        },
+        {
+          "name": "雞蛋",
+          "quantity": 4,
+          "unit": "piece"
+        }
+      ]
+    },
+    {
+      "id": "r02",
+      "title": "菠菜炒蛋",
+      "ingredients": [
+        "菠菜",
+        "雞蛋"
+      ],
+      "optional_ingredients": [
+        "蒜"
+      ],
+      "instructions": [
+        "將菠菜充分洗淨。",
+        "雞蛋炒至熟透，再加入菠菜炒熟。"
+      ],
+      "base_servings": 2,
+      "ingredient_quantities": [
+        {
+          "name": "菠菜",
+          "quantity": 1,
+          "unit": "piece"
+        },
+        {
+          "name": "雞蛋",
+          "quantity": 3,
+          "unit": "piece"
+        }
+      ]
+    },
+    {
+      "id": "r03",
+      "title": "雞肉蔬菜湯",
+      "ingredients": [
+        "雞胸肉",
+        "胡蘿蔔",
+        "洋蔥"
+      ],
+      "optional_ingredients": [
+        "馬鈴薯"
+      ],
+      "instructions": [
+        "洗淨蔬菜並切塊。",
+        "將雞肉煮至安全熟度，加入蔬菜煮熟。"
+      ],
+      "base_servings": 2,
+      "ingredient_quantities": [
+        {
+          "name": "雞胸肉",
+          "quantity": 400,
+          "unit": "g"
+        },
+        {
+          "name": "胡蘿蔔",
+          "quantity": 150,
+          "unit": "g"
+        },
+        {
+          "name": "洋蔥",
+          "quantity": 1,
+          "unit": "piece"
+        }
+      ]
+    },
+    {
+      "id": "r04",
+      "title": "高麗菜炒蛋",
+      "ingredients": [
+        "高麗菜",
+        "雞蛋"
+      ],
+      "optional_ingredients": [
+        "蒜"
+      ],
+      "instructions": [
+        "洗淨切細高麗菜。",
+        "將高麗菜炒軟後加入雞蛋並徹底炒熟。"
+      ],
+      "base_servings": 2,
+      "ingredient_quantities": [
+        {
+          "name": "高麗菜",
+          "quantity": 0.5,
+          "unit": "piece"
+        },
+        {
+          "name": "雞蛋",
+          "quantity": 3,
+          "unit": "piece"
+        }
+      ]
+    },
+    {
+      "id": "r05",
+      "title": "番茄蔬菜湯",
+      "ingredients": [
+        "番茄",
+        "洋蔥",
+        "胡蘿蔔"
+      ],
+      "optional_ingredients": [
+        "馬鈴薯"
+      ],
+      "instructions": [
+        "蔬菜洗淨切塊。",
+        "加水煮至所有食材熟透。"
+      ],
+      "base_servings": 2,
+      "ingredient_quantities": [
+        {
+          "name": "番茄",
+          "quantity": 2,
+          "unit": "piece"
+        },
+        {
+          "name": "洋蔥",
+          "quantity": 1,
+          "unit": "piece"
+        },
+        {
+          "name": "胡蘿蔔",
+          "quantity": 150,
+          "unit": "g"
+        }
+      ]
+    },
+    {
+      "id": "r06",
+      "title": "牛奶燕麥粥",
+      "ingredients": [
+        "牛奶",
+        "燕麥"
+      ],
+      "optional_ingredients": [
+        "香蕉"
+      ],
+      "instructions": [
+        "煮熱牛奶並加入燕麥。",
+        "煮至適當稠度後食用。"
+      ],
+      "base_servings": 2,
+      "ingredient_quantities": [
+        {
+          "name": "牛奶",
+          "quantity": 500,
+          "unit": "ml"
+        },
+        {
+          "name": "燕麥",
+          "quantity": 100,
+          "unit": "g"
+        }
+      ]
+    }
+  ]
+}

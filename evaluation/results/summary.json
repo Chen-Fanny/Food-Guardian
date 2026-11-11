@@ -1,0 +1,13 @@
+{
+  "suite_version": "v3.3",
+  "fixture_today": "2026-11-11",
+  "total_cases": 30,
+  "offline": {
+    "checks": 30,
+    "counts": {
+      "PASS": 25,
+      "NOT_RUN": 5
+    },
+    "note": "PASS means deterministic fixture/static document check only. No Gemini calls or actual RAG retrieval were tested."
+  }
+}

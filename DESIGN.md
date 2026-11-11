@@ -1,21 +1,21 @@
 # Food Guardian 系統設計文件
 
 > 智慧食材管理與家庭食物浪費減量 AI Agent  
-> 文件檢視日期：2026-10-24  
+> 文件更新日期：2026-11-12（依使用者提供之最新 D 組測試結果）  
 > 專案：https://github.com/Chen-Fanny/Food-Guardian  
-> 對照版本：`bcb290303db82149ea04765ea6a546f98956ebac`
+> 文件基礎：原始設計稿 + D 組已完成模組及 Evaluation；不代表該舊 commit 已含新功能
 
-本文件依照 **Problem → Requirements → Architecture → Components → Data → AI/Analytics → Domain Knowledge → Algorithm → Implementation → How to Run → Results** 說明系統。各章以目前程式碼為準，另將後續設計明確標成「規劃」。目前可使用的核心是庫存與日期提醒；完整 AI Agent 尚未完成。
+本文件依照 **Problem → Requirements → Architecture → Components → Data → AI/Analytics → Domain Knowledge → Algorithm → Implementation → How to Run → Results** 說明系統。各章以目前程式碼為準，另將後續設計明確標成「規劃」。現階段庫存／提醒與 D 組 AI Agent 核心均有實作；RAG Live、E 組整合及使用者驗收仍待完成。
 
 ## 1. Problem｜要解決什麼問題
 
 家庭購買食材後，常因忘記庫存、沒有注意日期或不知道如何搭配料理，導致重複購買和食材丟棄。只提供食譜的聊天機器人也不一定知道家中實際有哪些食材，推薦結果可能仍需要額外採買。
 
-Food Guardian 將食材紀錄、日期提醒與後續餐點建議放在同一套系統中。使用者先記錄食材與數量，再查看需要優先處理的項目；日後 AI 可查詢實際庫存和食譜資料，說明推薦理由。系統也保留使用與丟棄紀錄，作為後續分析浪費情況的依據。
+Food Guardian 將食材紀錄、日期提醒與後續餐點建議放在同一套系統中。使用者先記錄食材與數量，再查看需要優先處理的項目；目前 AI 已可透過工具查詢實際庫存和示範食譜資料，說明推薦理由。系統也保留使用與丟棄紀錄，作為後續分析浪費情況的依據。
 
 **目標使用者**：想管理冰箱、冷凍庫及儲藏櫃食材的家庭使用者。第一階段以單一家庭、本機操作的課程展示為範圍。
 
-**成功的判準**：庫存數量正確、操作紀錄可追溯、日期分類符合輸入資料；後續再驗證推薦是否符合庫存，以及實際浪費量是否下降。功能可操作並不等於已證明減少浪費。
+**成功的判準**：庫存數量正確、操作紀錄可追溯、日期分類符合輸入資料；目前已針對固定測資驗證推薦與數量計算，後續仍須擴充測試，以及實際浪費量是否下降。功能可操作並不等於已證明減少浪費。
 
 ## 2. Requirements｜需求與範圍
 
@@ -23,74 +23,79 @@ Food Guardian 將食材紀錄、日期提醒與後續餐點建議放在同一套
 
 | 編號 | 功能 | 驗收條件 | 目前狀態 |
 |---|---|---|---|
-| FR-01 | 食材新增與查詢 | 名稱不可空白，數量為正數；可依分類、位置和狀態篩選 | 已實作 |
-| FR-02 | 編輯與刪除 | 僅操作 active 紀錄；刪除用於輸入錯誤，與實際丟棄分開 | 已實作 |
-| FR-03 | 使用／丟棄紀錄 | 支援部分扣除，不得超過庫存；庫存與 log 同時成功或回復 | 已實作 |
-| FR-04 | 日期提醒 | 分辨正常、即將到期、超過日期及未設定日期；包含當天邊界 | 已實作 |
-| FR-05 | 首頁與庫存介面 | 顯示 active 食材筆數、提醒與操作回饋 | 已實作，仍需使用者驗收 |
-| FR-06 | 庫存導向餐點推薦 | 從真實庫存與食譜資料產生建議，列出缺少食材及推薦理由 | 規劃 |
-| FR-07 | 食品保存知識查詢 | 回覆附有來源與適用條件；查無資料時明確告知 | 規劃 |
-| FR-08 | 使用與浪費分析 | 從 logs 計算期間及分類統計，不混加不同單位 | 規劃 |
+| FR-01 | 食材新增與查詢 | 內容驗證、分類與狀態篩選 | 已實作；最新整合需驗收 |
+| FR-02 | 編輯與刪除 | active 保護、輸入錯誤的刪除與實際丟棄區隔 | 已實作 |
+| FR-03 | 使用／丟棄紀錄 | 不超額、交易一致性、事件 log | 已實作 |
+| FR-04 | 日期提醒 | Use By/Best Before、日期邊界、NULL 日期 | 已實作 |
+| FR-05 | 庫存 UI | 首頁、dialog、狀態顯示與回饋 | 已實作；跨組人工驗收待做 |
+| FR-06 | 庫存導向推薦 | Tool Calling 查庫存、指定人數、缺料與排序 | **已實作且有實際 Tool Trace** |
+| FR-07 | 食品保存知識 | JSON/RAG 查詢、資料來源限制與引用 | 已實作；RAG Live 引用品質待驗證 |
+| FR-08 | 使用／浪費分析 | 依 logs 計算可比較單位的統計 | Analytics Service 有實作介面；E 組最終驗收待確認 |
+| FR-09 | 安全前置篩選 | 依實際庫存日期標示保守分組 | **已實作且有 SQLite Tool Trace** |
+| FR-10 | 評估及服務可靠性 | 離線＋Live 工具選擇、API 錯誤分類、有限重試 | **已有測試結果**；人工品質審核待完成 |
 
 ### 2.2 非功能需求
 
-- **資料一致性**：使用／丟棄採資料庫交易；同時操作時不可重複超額扣除。
-- **可維護性**：UI、Service、資料庫與 Agent adapter 分層；固定選項集中管理。
-- **可理解性**：介面使用中文標籤，資料庫使用固定英文值；錯誤訊息讓使用者知道如何修正。
-- **可重現性**：設定檔、資料表與啟動方式納入版本控制；實驗結果應記錄資料版本、模型與條件。
-- **資料與金鑰管理**：本機資料庫保留使用紀錄，`.env` 不提交；未實作登入、家庭隔離與正式雲端備份。
-- **領域限制**：日期提醒不代表食品安全判定；缺少保存條件時，不推定食物可食用。
+- **資料一致性**：庫存扣除與 log 以 SQLite 交易維護；推薦工具以唯讀為原則。
+- **可維護性**：UI / Service / Tools / Agent 各司其職，本地規則模式可作沒有 API 時的替代路徑。
+- **可解釋性**：LLM 應忠實呈現計算工具回傳的缺額、狀態與理由，不得自行把 `unknown` 寫成 `enough`。
+- **領域安全**：`eligible` 僅表示未觸發既定排除規則；不能保證食材安全，未知單位需人工確認。
+- **可重現性**：Evaluation 固定測資、保存測試 CSV/summary、區分 API 錯誤與模型工具選擇錯誤。
+- **隱私與安全**：`.env`、真實 SQLite 與私有索引不公開；尚無多家庭身份驗證。
 
-### 2.3 第一階段不包含
+### 2.3 暫不實作與限制
 
-影像辨識、IoT 感測器、大型向量資料庫、自行訓練大型模型、多家庭帳號及付款功能均不在目前範圍內。背景推播與排程通知也尚未實作，提醒目前顯示在網頁中。
+未包含 YOLO 食材辨識、IoT 感測器、自行訓練 LLM、多家庭登入、實際保存溫度監測或長期食品浪費減量因果驗證。與初始計畫不同，目前**已導入小型向量檢索 RAG**，但不能將 RAG 靜態文件檢查視為語意檢索品質驗證。
 
 ## 3. Architecture｜系統如何組成
 
-採用 Python 單體應用與分層設計。Streamlit 負責互動，Service 負責資料驗證與業務規則，DatabaseManager 管理 SQLite 連線及交易。庫存、提醒不需要呼叫 LLM。
+系統以 Streamlit 提供操作介面；InventoryService / ReminderService 管理 SQLite；D 組 Gemini + LangGraph Agent 以 Tool Calling 串接既有服務，並保留本地規則模式。Service 計算食材缺額、日期分類和食品安全初篩；LLM 負責理解意圖、選工具及解釋結果。
 
 ```mermaid
-flowchart TD
-    UI["Streamlit 介面"] --> INV["InventoryService"]
-    UI --> REM["ReminderService"]
-    REM --> INV
-    INV --> DBM["DatabaseManager"]
-    DBM --> DB[(SQLite)]
-    UI -.-> AG["AI Agent（規劃）"]
-    AG -.-> LLM["LLM（規劃）"]
-    AG -.-> TOOLS["工具介面"]
-    TOOLS --> INV
-    TOOLS --> REM
-    TOOLS -.-> RK["食譜與知識服務（規劃）"]
-    UI -.-> AN["AnalyticsService（規劃）"]
-    AN -.-> DBM
+flowchart LR
+    USER[使用者] --> UI[Streamlit]
+    UI --> INVENTORY[庫存/日期頁]
+    UI --> CHAT[Agent 聊天頁]
+    UI --> ANALYTICS[分析頁]
+    INVENTORY --> SERVICE[InventoryService / ReminderService]
+    SERVICE <--> DB[(SQLite)]
+    ANALYTICS --> DB
+    CHAT --> GRAPH[Gemini + LangGraph]
+    CHAT --> LOCAL[本地規則模式]
+    GRAPH --> TOOLS[Agent Tools]
+    TOOLS --> INVENTORYTOOLS[庫存 / 到期查詢]
+    TOOLS --> PORTION[Recipe + Portion Service]
+    TOOLS --> SAFETY[Safety Validator]
+    TOOLS --> RAG[Knowledge Tool + RAG Service]
+    INVENTORYTOOLS --> SERVICE
+    PORTION --> SERVICE
+    SAFETY --> SERVICE
+    RAG --> JSON[(食品來源 JSON)]
+    RAG --> VECTOR[(ChromaDB)]
+    LOCAL --> PORTION
 ```
 
-實線表示目前已有實作的主要依賴；虛線表示待串接的設計。工具介面中只有庫存查詢 adapter 已有實作，尚未接入真正的 LLM tool-calling 流程。
-
-**設計理由**：SQLite 適合本機原型，不需要另外架設資料庫；Service 可同時提供 UI 與未來 Agent 使用，避免兩套庫存邏輯。當使用人數或並行寫入增加時，再評估獨立 API 與其他資料庫。
+**主要路徑**：`使用者 → Gemini → LangGraph tool node → Python Tool/Service → SQLite/JSON/ChromaDB → Gemini 生成可追溯回答`。Tool Trace 可提供工具呼叫與參數紀錄；它只能證明工具被呼叫，尚不能單獨保證內容品質。
 
 ## 4. Components｜各模組負責什麼
 
-| 元件／檔案 | 責任 | 狀態 |
+| 元件 | 職責 | 驗證狀態 |
 |---|---|---|
-| `src/ui/app.py` | 頁面導覽、初始化資料庫、錯誤處理與頁面組裝 | 已實作 |
-| `src/ui/components/home_view.py` | active 庫存概況與優先處理清單 | 已實作 |
-| `inventory_view.py`、`item_dialogs.py` | 篩選、詳細資料及新增／編輯／使用／丟棄／刪除視窗 | 已實作 |
-| `reminders_view.py` | 日期分類與提醒天數選擇 | 已實作 |
-| `src/services/inventory_service.py` | CRUD、欄位驗證、數量扣除與 log 寫入 | 已實作 |
-| `src/services/reminder_service.py` | 計算剩餘天數、分類 active 庫存 | 已實作 |
-| `src/database/db_manager.py` | 建立路徑、讀取 schema、連線與交易生命週期 | 已實作 |
-| `src/database/schema.sql` | 資料表定義的唯一來源 | 已實作 |
-| `src/agent/tools/inventory_tools.py` | `query_active_inventory`、`query_expiring_items` 查詢 adapter | 已實作 |
-| `src/agent/agent_core.py` | 工具註冊、自然語言推理與 tool-calling 協調 | 僅工具定義註冊已有實作，推理未完成 |
-| `recipe_service.py`、`recipe_tools.py` | 食譜匹配與工具封裝 | 骨架 |
-| `knowledge_service.py`、`knowledge_tools.py` | JSON 知識載入、查詢與工具封裝 | 骨架 |
-| `analytics_service.py` | 使用與丟棄統計 | 骨架 |
-| `agent_chat_view.py`、`analytics_view.py` | AI 對話與分析頁面 | 僅開發中提示 |
-| `src/constants.py`、`src/config.py`、`src/utils/helpers.py` | 固定選項、環境設定、日期解析 | 已實作 |
+| `src/ui/app.py`、`src/ui/components/` | Streamlit 導覽、庫存、提醒、AI 對話、分析介面 | 已有運作紀錄；整合人工驗收待做 |
+| `src/database/db_manager.py`、`schema.sql` | SQLite 連線、schema、交易 | 原始模組已實作 |
+| `src/services/inventory_service.py`、`reminder_service.py` | 庫存 CRUD、使用／丟棄與日期提醒 | 原始模組已實作 |
+| `src/agent/gemini_graph.py`、`gemini_mode.py` | Gemini + LangGraph 流程與工具選擇 | **Live Tool Trace 已驗證** |
+| `src/agent/agent_core.py` | 本地／既有 Agent 抽象與相容介面 | 本地模式已有測試 |
+| `src/agent/tools/inventory_tools.py` | 庫存、到期食材查詢 | 已實作 |
+| `src/agent/tools/recipe_tools.py`、`recipe_service.py` | 食譜查詢、匹配與推薦 | 已實作；食譜量為示範資料 |
+| `src/services/portion_service.py` | 指定人數、單位正規化、缺額與雙模式排序 | **計算與 Tool Trace 已驗證** |
+| `src/services/safety_service.py` | 依 SQLite 日期資訊執行安全前置篩選 | **工具回傳紀錄已驗證** |
+| `knowledge_service.py`、`knowledge_tools.py` | 基礎食品保存知識查詢 | 已實作，範例資料不等於可靠官方依據 |
+| `rag_service.py`、`scripts/build_rag_index.py` | ChromaDB RAG 文件索引與檢索 | 已建置；RAG Live 兩題尚待驗證 |
+| `analytics_service.py` | 使用／丟棄事件統計 | 需 E 組最終驗收 |
+| `evaluation/`、`tests/` | 固定測資、離線測試、Gemini Live 評估、重試與 CSV | **初步 Evaluation 已通過指定範圍** |
 
-檔名未列完整路徑者位於同列對應的模組目錄。UI 不直接執行 SQL；Agent 工具不自行重寫扣庫存規則。
+本文件中的「已實作」指程式功能或已有測試證據，**不代表已完成全部使用者驗收**。
 
 ## 5. Data｜資料來源、結構與生命週期
 
@@ -100,10 +105,10 @@ flowchart TD
 |---|---|---|
 | 食材庫存 | 使用者手動輸入 | 不是感測器自動盤點；正確性依賴輸入與持續更新 |
 | 使用／丟棄紀錄 | Service 在操作時自動建立 | 可追蹤數量、日期與原因；未操作就沒有紀錄 |
-| 食品知識 | `food_knowledge.sample.json` | 現有 4 筆食材範例，只供結構示意，尚無逐筆來源欄位 |
-| 食譜資料 | 尚未導入 | 待選定資料集或 API，確認授權與食材欄位後才能比較推薦結果 |
+| 食品知識 | `food_knowledge.sample.json`、整理的來源文件與 RAG 索引 | 示範 JSON 與來源整理並存；需逐筆核對引用及適用情境 |
+| 食譜資料 | `data/knowledge_base/recipes.sample.json` | 已建立小型示範食譜與份量數據；並非標準食譜或大規模資料集 |
 
-本版本沒有已確定的 Kaggle 食譜資料集，也沒有已完成的訓練資料與模型實驗。不得將未導入的外部資料寫成既有資料來源。
+本版本尚無正式的 Kaggle 食譜資料集，也未自行訓練模型；推薦採既有示範食譜與決定性 Python 計算，LLM 負責工具協調與語言生成。
 
 ### 5.2 SQLite 資料表
 
@@ -128,7 +133,7 @@ flowchart TD
 
 **`recipe_recommendations`：預留推薦紀錄表**
 
-包含 `id`、`recipe_title`、`matched_ingredients`、`instructions`、`created_at`。目前只有建表定義，尚未實作寫入與查詢推薦流程；不能視為已存在的食譜資料集。
+包含 `id`、`recipe_title`、`matched_ingredients`、`instructions`、`created_at`。目前主要保留建表定義，尚未驗證 D 組推薦結果寫入此表；D 組推薦資料改由示範 JSON 與 Python 服務提供，不能將這張表視為食譜資料集。
 
 ### 5.3 資料生命週期與限制
 
@@ -140,174 +145,157 @@ Schema 初始化使用 `CREATE TABLE IF NOT EXISTS`，不會自動完成舊 sche
 
 ## 6. AI/Analytics｜AI 與資料分析的角色
 
-### 6.1 AI Agent（規劃）
+### 6.1 Domain AI Agent（D 組已實作）
 
-預定流程為：理解使用者需求 → 選擇唯讀工具 → 查詢實際資料 → 由 Python 執行匹配／計算 → LLM 整理結果與依據。
+- **LLM 與協調**：Gemini + LangGraph，對話根據意圖呼叫工具，成功時以 Tool Trace 保留工具名稱和參數。
+- **可用工具**：庫存查詢、到期食材查詢、指定份數推薦（`recommend_recipes_for_servings_tool`）、食品保存查詢及 SQLite 安全檢查（`validate_inventory_safety_tool`）；食品知識 RAG 在設定完成時可使用。
+- **本地替代方案**：無 `GOOGLE_API_KEY` 或 API 暫不可用時，使用者可自行選擇本地規則模式；**不應假稱 Gemini 請求失敗後已自動退回本地**。
+- **數據分工**：Python 服務計算數量、排序、缺額及前置安全規則，Gemini 負責選擇工具、理解自然語言與解釋。
+- **關鍵限制**：同一道食譜按份量個別計算；同時製作多道料理時尚無跨食譜共享庫存扣除。菠菜等 `other` 單位不能可靠轉成 `piece`，應回覆人工確認。
 
-例如「今晚能做什麼，先用快到期的食材」，Agent 應先查庫存與日期，再取得候選食譜，列出使用食材、缺少食材與優先原因。不能憑語言模型記憶聲稱家中有某項食材，也不能在資訊不足時承諾食品安全。
+**實測範例**：使用者詢問兩人份番茄炒蛋，示範食譜需番茄 2 個及雞蛋 4 個，庫存有番茄 2 個及雞蛋 3 個；工具回傳雞蛋缺少 1 個。`ready_now` 把數量完整的高麗菜炒蛋排前；`expiry_first` 優先考慮較急迫的番茄炒蛋並提示缺料。
 
-後續需實作工具 schema、呼叫分派、參數驗證、多輪工具結果回傳、最大輪數、逾時與 API 失敗處理，以及來源與查詢時間呈現。目前 `FoodGuardianAgent.process_query()` 直接拋出 `NotImplementedError`。
+### 6.2 Analytics（需 E 組整合驗收）
 
-LLM 設定已預留 `OPENAI_API_KEY`、`LLM_MODEL` 與 `LLM_TEMPERATURE`，預設模型名稱為 `gpt-4o-mini`，溫度為 `0.2`；這只是程式預設值，不代表已呼叫或驗證模型。推薦本身不應自動扣庫存，實際使用量仍由使用者確認紀錄。
+使用 `consumption_waste_logs` 的實際使用／丟棄事件，依期間、分類、原因和相容單位彙整，並用 Pandas／Plotly 展示。數量不可跨 kg、顆、瓶直接加總。
 
-### 6.2 Analytics（規劃）
-
-以 `consumption_waste_logs` 為事件來源，使用 Pandas 依期間、分類、原因及單位彙整，再用 Plotly 呈現。首頁現有的筆數 KPI 與完整浪費分析是不同功能。
-
-同一可比較單位下，可定義：
+在單位可比較及分母大於零時可計算：
 
 `浪費比例 = 丟棄量 /（使用量 + 丟棄量）× 100%`
 
-此指標僅描述已記錄的處理量；分母為 0 時應顯示「無資料」。不得把 kg、顆、瓶直接加總。未來若要統一重量，需補單位轉換與單件重量；若要估算金額，需補價格資料。目前 schema 沒有成本欄位，不能產生可信的節省金額。
+此值只描述**已記錄**的處理量。未收集成本、持續觀察或對照組時，不得宣稱具體節省金額或已證明食物浪費下降。
 
 ## 7. Domain Knowledge｜領域知識如何加入
 
-系統需要食材分類、保存位置、日期標示、保存條件與料理搭配知識。現在的日期規則已落在 `constants.py` 與 ReminderService；保存知識查詢尚未完成。
+目前採 JSON 食品知識及小型 ChromaDB RAG，支援食品保存知識查詢與來源描述。知識來源可能為 `project_sample`，工具可回傳 `verified=false`；示範 JSON 不能偽裝成官方背書。另有整理的官方資訊摘要，但**引用及適用條件仍須個別核實**。
 
-目前範例 JSON 有 categories 與 items，包含名稱、保存方式、示意保存天數、變質徵兆及減量提示。但它不是經來源審核的正式知識庫；其中分類、單位和保存方式也未完全對齊庫存固定值，例如 `dairy` 與 `egg_dairy`、`pieces` 與 `piece`、`refrigerated` 與 `refrigerator`。
+處理方式：
 
-正式整合前應完成以下工作：
+1. 將食物名稱、日期標示、保存位置、來源和適用條件結構化。
+2. RAG 索引以 Sentence Transformers 向量化，ChromaDB 檢索後提供給 Agent 參考。
+3. 將來源是否核實、查無資訊及資料不足情況明確提供給使用者。
+4. 使用 `validate_inventory_safety_tool` 檢查 SQLite 食材紀錄，依日期標示初步分類，不把 RAG 的文字建議取代安全前置規則。
 
-1. 為每筆知識補上來源名稱、URL、查核日期、適用地區與保存條件。
-2. 統一分類、單位、保存位置與食材別名，保留原始資料及對照表。
-3. 將示意保存天數與產品實際標示分開，不用範例天數覆蓋使用者輸入的日期。
-4. 審核所有保存與可食用相關敘述；不把單一外觀、氣味或浮水測試當作安全保證。
-5. 對查無資料、來源過時或條件不足的問題，回傳限制及需要補充的資訊。
+Use By、Best Before 需依實際產品及所在地標示規定理解；外觀、氣味或日期不能單獨證明可食用。`eligible` 只代表**未觸發目前已知的排除規則**，不是食品安全認證。
 
-日期分類只回答「距離輸入日期還有幾天」。Use By 與 Best Before 的提示需保留差異，實際解讀仍應配合產品標示與適用規範；本版沒有實作跨地區法規推理。
+**待完成**：RAG Live MUL-02、MUL-04 的實際檢索與引用支持度測試，以及來源人工審核。
 
 ## 8. Algorithm｜核心演算法與規則
 
-### 8.1 庫存扣除（已實作）
+### 8.1 庫存與日期規則（已實作）
 
-```text
-輸入：item_id、操作數量 q、action（consumed 或 wasted）
-1. 確認 q 為大於 0 的有限數值。
-2. 開始 BEGIN IMMEDIATE 交易，取得寫入鎖後讀取食材。
-3. 確認食材存在、status = active、現有量 Q > 0，且 q ≤ Q。
-4. 以 Decimal 計算 R = Q − q，檢查轉回 REAL 的可表示精度。
-5. 更新 quantity = R；R > 0 時維持 active，否則設為 action。
-6. 新增本次 log，保存食材名稱、分類、數量、單位與日期。
-7. 一起 commit；任一步失敗則 rollback，最後關閉連線。
-```
+庫存使用／丟棄以 SQLite transaction 更新庫存並新增 log，拒絕超額扣除。日期提醒以 `d = expiry_date − today` 及門檻 `t` 判斷：無日期為 `no_date`、`d < 0` 為 `passed_date`、`0 ≤ d ≤ t` 為 `expiring_soon`、其餘為 `normal`。Reminder 不等於安全檢驗。
 
-SQLite 儲存型別仍是 REAL；使用 Decimal 是降低扣除計算誤差，不代表資料庫具有任意精度。
+### 8.2 Quantity Validator（已實作）
 
-### 8.2 日期提醒（已實作）
+對任一食譜：`所需量 = 原始食譜量 × 目標人數 / 食譜原始人數`；對可比較單位正規化後，`缺少量 = max(0, 所需量 − 可用庫存量)`。支援已定義的公克／公斤、毫升／公升等換算；無法換算的單位保留 `unknown`，不應推定為數量足夠。
 
-令 `d = expiry_date − today`，單位為日，提醒門檻為 `t`：
+### 8.3 雙模式推薦（已實作）
 
-| 條件 | 結果 |
-|---|---|
-| 沒有日期 | `no_date` |
-| `d < 0` | `passed_date` |
-| `0 ≤ d ≤ t` | `expiring_soon` |
-| `d > t` | `normal` |
+- `ready_now`：優先排序庫存數量足夠、單位可確認的食譜；需要額外食材者應提示缺額。
+- `expiry_first`：優先排序可消耗較接近日期的食譜；即使缺料也可能列前，但不得標為可立即製作。
+- 既有 `balanced` 模式仍維持相容。實際排序另使用 `quantity_coverage`、`urgency_score` 等內部欄位；**分數代表推薦計算，不代表食品安全程度**。
 
-只計算 active 食材。預設門檻 3 天，UI 提供 1、3、5、7 天；Service 接受非負整數。`query_expiring_items()` 不包含超過日期與無日期項目。`get_expired_items()` 的名稱只表示超過輸入日期，不是安全判定。
+### 8.4 Safety Validator（已實作；屬前置篩選）
 
-### 8.3 食譜排序（建議設計，尚未實作）
+以實際 SQLite active 庫存、日期標示及已知風險作保守規則分類：`eligible`（無已知阻擋條件）、`review`（需人工檢查）、`blocked`（排除自動推薦）。不可將 `eligible` 寫為「確定安全」。目前無實際溫度、開封後保存條件的充分驗證。
 
-先做食材名稱與別名正規化，再取得候選食譜。對每道食譜計算：
+### 8.5 Agent Reliability 與 Evaluation（已有初步驗證）
 
-- 庫存覆蓋率：已具備的必要食材種類數／必要食材種類總數。
-- 即期利用量：可使用的即將到期食材種類數。
-- 缺料數：目前沒有的必要食材種類數。
-
-第一版可依「即期利用種類數降冪 → 覆蓋率降冪 → 缺料數升冪」排序，使用固定食譜 ID 打破平手。種類匹配不等於份量足夠；取得食譜份量與單位後，才加入數量驗證。超過標示日期的食材不自動納入可用推薦集合。過敏原與飲食限制若要支援，需先取得完整資料並作前置篩選。
-
-此規則可作可解釋的 baseline，日後再與單純庫存匹配或一般 LLM 建議比較。未實作前不宣稱推薦準確率。
+Live 評估以工具 Trace 檢查必要工具是否被呼叫，對 API 暫時不可用錯誤使用**有限次數重試**。API Success Rate 與 Valid Tool Selection Accuracy 分開計算：若請求因 503 中止，應標記 `API_ERROR`，不能直接視為模型選錯工具。回覆的事實正確性、RAG groundedness 和安全符合度仍需人工評分。
 
 ## 9. Implementation｜實作方式與後續整合
 
-### 9.1 現有技術
+### 9.1 依賴與程式結構
 
-Python 3.10+、Streamlit、SQLite 與 python-dotenv 為現有主要依賴。requirements 另列 Pandas、NumPy、Plotly、OpenAI SDK、Pydantic、pytest、flake8，供後續分析、AI 與驗證使用；列入依賴不等於功能已完成。Streamlit 需求為 `>=1.66.0`，目前依賴未鎖定精確版本。
+原組員的 Streamlit、Pandas、NumPy、Plotly、Pydantic、python-dotenv 等依賴保留；D 組加入 LangGraph、LangChain Google GenAI、Gemini SDK、ChromaDB 與 Sentence Transformers。正式套件列於 `requirements.txt`，測試工具另見 `requirements-dev.txt`。開發紀錄中的 Windows Conda 環境為 Python 3.11；實際部署應用 `pip check` 驗證依賴。
 
-資料庫操作使用參數化 SQL；每次連線啟用 foreign keys，以 `sqlite3.Row` 取得欄位資料。Service 統一驗證名稱、數量、日期與固定選項。找不到 ID 拋出 LookupError，無效輸入或修改完成紀錄拋出 ValueError，由 UI 轉成可理解的提示。
+主要實作：`src/agent/gemini_graph.py`、`gemini_mode.py`、`src/services/portion_service.py`、`safety_service.py`、`rag_service.py`、`evaluation/run_evaluation.py`、`retry_handler.py`、`metrics.py`。**功能測試檔命名不含歷史版本號**，避免重複維護。
 
-### 9.2 開發順序
+### 9.2 開發現況與剩餘工作
 
-1. 補齊並提交庫存／提醒測試與人工驗收紀錄，修正 README 中失效的文件連結。
-2. 審核知識資料來源與欄位對照，完成 KnowledgeService 及工具查詢。
-3. 選定有授權的食譜資料，完成清理與可解釋匹配 baseline。
-4. 實作 Agent 推理迴圈與工具呼叫，再串接對話頁面。
-5. 實作 logs 分析、統計頁面與實驗匯出，完成比較與使用者驗證。
+1. D 組 Agent、數量驗證與雙模式推薦已有工具呼叫實測。
+2. 需完成 RAG Live 搜尋與引用品質、人工 Task Completion 與 Safety 回覆審核。
+3. 與 C 組庫存表單統一 `other`／把／包／個等單位語意；不能任意以數量換算重量。
+4. 與 E 組確認 Analytics Service 和 Dashboard 的資料正確性。
+5. 完整 Demo、UI 整合、長期浪費減量成效與足夠樣本的重測仍待完成。
 
-### 9.3 部署注意事項
+### 9.3 系統部署與金鑰保護
 
-目前沒有登入與家庭資料隔離；直接部署成公開服務會讓共用資料庫的使用者存取同一份庫存。正式部署前需完成存取控制，並確認持久化磁碟、備份與時區設定。SQLite 檔案應以備份方式保護，不能假設暫存執行環境會永久保留。
+`.env` 置於專案根目錄並加入 `.gitignore`，不可公開；真實 SQLite 及 ChromaDB 索引不應直接隨分享壓縮包散布。單一 SQLite 並非多家庭權限隔離設計。時間相關測試以固定測資日期執行，正式服務依當前日期與時區計算，不可把舊測試庫存當作實際安全狀態。
 
 ## 10. How to Run｜安裝與執行
 
-### 10.1 下載與安裝
-
-macOS／Linux，在終端機執行：
-
-```bash
-git clone https://github.com/Chen-Fanny/Food-Guardian.git
-cd Food-Guardian
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-cp .env.example .env
-```
-
-Windows PowerShell 建立及啟用虛擬環境：
+### 10.1 Windows Conda 環境
 
 ```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-Copy-Item .env.example .env
+conda activate foodguardian
+python -m pip install -r requirements-dev.txt
+python -m pip check
 ```
 
-### 10.2 設定與啟動
+將 `.env.example` 複製為專案根目錄的 `.env`，設定自己的 `GOOGLE_API_KEY`、實際可用的 `GEMINI_MODEL` 與 `AGENT_MODE=gemini`。如要使用 RAG，請確保索引可用並設定 `RAG_ENABLED=true`，必要時執行：
 
-庫存及提醒不需要 API Key。預設資料庫為 `data/database/food_guardian.db`；可在 `.env` 設定 `DATABASE_PATH`。首次開啟首頁、庫存或提醒頁時，自動建立資料夾與資料表。請勿將真實金鑰提交到版本控制。
+```powershell
+python scripts/build_rag_index.py
+```
 
-```bash
+### 10.2 啟動及測試
+
+```powershell
 python -m streamlit run src/ui/app.py
+python -m pytest tests -q
+python evaluation/run_evaluation.py
 ```
 
-開啟終端機顯示的 Local URL，通常為 `http://localhost:8501`。停止程式按 Ctrl+C；重啟後以相同資料庫路徑讀取既有紀錄。AI 推薦與分析頁目前只顯示開發中訊息。
+Gemini Live 多工具評估（會產生外部 API 呼叫與可能的費用）：
 
-### 10.3 最小人工驗收
+```powershell
+python evaluation/run_evaluation.py --live --category multi_tool --limit 3 --max-retries 1
+```
 
-1. 新增雞蛋 10 個，分類選蛋／乳製品、單位選個、位置選冷藏，填寫日期與標示類型。
-2. 使用 3 個後，確認剩餘 7 個且仍是 active。
-3. 嘗試使用 8 個，確認操作被拒絕且庫存不變。
-4. 丟棄 2 個後，確認剩餘 5 個，資料庫有兩筆操作 log。
-5. 使用最後 5 個，確認數量為 0、狀態為 consumed，且編輯／刪除／再次扣除不可用。
-6. 另新增日期為昨天、今天、門檻當天、門檻隔天及未設定日期的資料，確認對應分類。
-7. 重啟程式，確認資料保留。測試時請指定獨立的 DATABASE_PATH。
+結果輸出至 `evaluation/results/`。離線固定庫存不應操作正式 SQLite。`--limit 3` 只限制符合條件的案例數；需要真正 RAG 搜尋的兩題預設列入 `skipped_cases`，不是執行失敗。
 
-目前對照版本沒有提交 `tests/`，因此 README 的 `pytest tests/` 不能作為本版可直接重現的測試流程。待測試檔補齊後再執行；本文件不將缺失的測試視為已通過。
+### 10.3 簡要人工驗收
+
+1. 確認庫存 CRUD 和日期提醒操作無誤。
+2. 在聊天頁要求「兩人份番茄炒蛋」，查看份量、缺額與 `recommend_recipes_for_servings_tool` Trace。
+3. 分別測試 `ready_now` / `expiry_first`，觀察排序差異。
+4. 使用 `validate_inventory_safety_tool` 查 SQLite 某一筆食材，確認回傳的日期標示、原因及聲明。
+5. 重新建立 RAG 索引並抽查實際來源引用。
+6. 檢查 Evaluation CSV 與 summary 中的 API／工具評估分母一致，保留原始結果。
 
 ## 11. Results｜目前成果、證據與評估計畫
 
-### 11.1 目前可以確認的成果
+### 11.1 已取得的 D 組成果
 
-| 項目 | 可確認內容 | 證據與限制 |
-|---|---|---|
-| 庫存與操作紀錄 | CRUD、部分使用／丟棄、交易與完成紀錄保護已有程式 | `inventory_service.py`、`schema.sql`；本次以原始碼檢視確認 |
-| 日期提醒 | active 篩選、日期邊界、NULL 日期分類已有實作 | `reminder_service.py`、`helpers.py` |
-| 網頁介面 | 首頁、庫存、提醒與操作 dialog 已有程式 | `src/ui/`；`docs/screenshots/` 有既有截圖 |
-| AI、食譜、知識與分析 | 有模組邊界與方法骨架 | 核心方法仍拋出 NotImplementedError，不能展示完整流程 |
-| 浪費減量與推薦效能 | 尚無可重現的量化結果 | 未提供實驗資料、baseline 結果或使用者研究 |
+以下是**使用者在原開發環境實際執行的 Evaluation v3.3 摘要**；不同於原始設計稿中的「AI 未完成」狀態：
 
-README 記載「83 tests passed」與瀏覽器驗證，但本次下載的版本沒有 `tests/`、`TODO.md`、`docs/architecture.md` 或 `docs/ui-redesign-validation.md`。因此這些通過數與驗證細節僅能視為既有文件記載，無法在此版本獨立重現。本次環境也未安裝 Streamlit、python-dotenv 與 pytest，未執行應用或完整測試。
+| 指標 | 實際記錄 | 解釋 |
+|---|---:|---|
+| 評估情境總數 | 30 | 六類，每類 5 題 |
+| 離線 PASS | 25 | 決定性邏輯及來源文件靜態檢查 |
+| 離線 NOT_RUN | 5 | 需 Gemini 的多工具情境 |
+| Gemini Live attempted | 3 | 排除 RAG 相依案例 MUL-02、MUL-04 |
+| API Success Rate | 3/3 = 100% | 僅代表當輪 3 個請求 |
+| Valid Tool Selection Accuracy | 3/3 = 100% | 僅針對有效回應的工具 Trace |
+| 額外重試次數 | 1 | 有使用有限次數退避重試的記錄 |
+| 成功請求平均耗時 | 11.71 秒 | 僅該輪的成功請求 |
 
-### 11.2 後續驗證與應交付證據
+先前不同輪次曾出現 503 `UNAVAILABLE`，更新後可將 `API_ERROR` 與 `TOOL_MISMATCH` 分開報告。上表**不能解讀為全部 30 題通過、RAG 檢索準確率 100% 或已經證明食品安全**。
 
-| 驗證面向 | 方法 | 應保留的結果 |
-|---|---|---|
-| 資料正確性 | CRUD、超額扣除、rollback、並行操作與歷史保護測試 | 測試檔、環境版本與執行報告 |
-| 日期邊界 | 固定 today，測試 -1、0、t、t+1 與 NULL | 預期與實際分類對照 |
-| 工具呼叫 | 固定問題與庫存，檢查工具選擇、參數及資料依據 | 成功率、失敗案例、延遲與模型版本 |
-| 推薦品質 | 同一份庫存與食譜，比較一般匹配與即期優先排序 | 覆蓋率、缺料數、即期利用及人工評分 |
-| 知識可信度 | 抽查來源、適用條件與未知問題回覆 | 查核紀錄及不當安全保證案例數 |
-| 浪費減量 | 比較相同長度觀察期並控制紀錄方式與可比較單位 | 各期使用／丟棄量、浪費比例、樣本數與限制 |
+### 11.2 當前已驗證的工具情境
 
-觀察期、樣本數與門檻應在實驗前訂定。沒有控制條件時，前後差異只能當作觀察結果，不能直接歸因於 AI。最終報告應同時呈現有效案例與失敗案例，保留匿名化資料及計算方式，讓其他人可以重現。
+- `recommend_recipes_for_servings_tool(servings=2, mode=ready_now)`：高麗菜炒蛋在數量條件上優先。
+- `recommend_recipes_for_servings_tool(servings=2, mode=expiry_first)`：番茄炒蛋到期優先但顯示雞蛋缺 1 個。
+- `validate_inventory_safety_tool(item_name=雞胸肉)`：成功讀取 SQLite 實際庫存與日期規則狀態；eligible 不是食品安全保證。
+
+### 11.3 待完成、不能宣稱已通過的項目
+
+- RAG Live MUL-02／MUL-04：需實際檢索與證據支持度評分。
+- Task Completion、RAG Groundedness、Food Safety 回覆品質的人工審核。
+- C／D／E 合併後完整端對端測試、資料一致性與實際使用者驗收。
+- 較大樣本、不同時間的 API 穩定性測試與長期食物浪費減量實驗。
+
+相關文件：[`docs/EVALUATION_REPORT.md`](docs/EVALUATION_REPORT.md)、[`docs/PRESENTATION_OUTLINE.md`](docs/PRESENTATION_OUTLINE.md)。保留測試原始 CSV，不合併不同輪次作無根據的平均。
+

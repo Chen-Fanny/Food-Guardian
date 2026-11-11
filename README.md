@@ -12,7 +12,7 @@
 
 - [專題介紹](#-專題介紹)
 - [研究動機](#-研究動機)
-- [預計實作功能](#-預計實作功能)
+- [功能與目前進度](#-功能與目前進度)
 - [Inventory & Reminder Module](#inventory--reminder-module)
 - [Web Interface](#web-interface)
 - [系統架構](#️-系統架構)
@@ -29,7 +29,7 @@
 
 **Food Guardian** 是一套輕量化的智慧家庭食材管理 **AI Agent** 系統，旨在協助使用者記錄食材庫存、查看食品日期標示與提醒、依照現有食材取得餐點建議，以及追蹤食材使用與丟棄情況。
 
-本專題預計結合 **大型語言模型（LLM）與 Tool Calling**、食材資料庫、Python 資料分析，以及小型食品保存知識庫。與直接向聊天機器人詢問食譜不同，Food Guardian 的目標是讓 AI 能透過工具查詢**實際庫存**與**既有食譜資料**，再提供可說明依據的建議。
+目前已整合 **Gemini + LangGraph Tool Calling**、SQLite 食材庫存、Python 規則式推薦、RAG 食品知識檢索與 Evaluation 測試。與直接向聊天機器人詢問食譜不同，Food Guardian 的目標是讓 AI 能透過工具查詢**實際庫存**與**既有食譜資料**，再提供可說明依據的建議。
 
 本系統提供的食品日期資訊與保存提醒僅供輔助管理，**不能取代實際食品安全判斷**；資訊不足時應提醒使用者進一步確認，而非保證食材可安全食用。
 
@@ -43,23 +43,25 @@
 
 Food Guardian 希望透過庫存可視化、日期提醒與 AI 輔助餐點推薦，幫助使用者更有效率地利用現有食材。實際減少食物浪費的效果將留待實驗與使用紀錄驗證。
 
-## 🚀 預計實作功能
+## 🚀 功能與目前進度
 
-專案處於 **In Development**；Inventory & Reminder 功能已實作並通過自動測試，尚待人工操作驗收。AI Agent、Knowledge Base 與 Analytics 仍為 Planned，整體專案尚未完成。
+本專題持續開發中；**Inventory & Reminder 已有功能及測試紀錄，D 組 AI Agent 核心功能已完成實作與實測**。以下將「已實作」、「已有實測」與「仍待驗證」分開標註，避免將程式存在誤寫為整體驗收完成。
 
-| 編號 | 功能 | 說明 | 狀態 |
-|---|---|---|---|
-| 1 | **食材庫存管理** | 新增、查看、修改、刪除食材；記錄數量、保存位置與日期資訊，支援部分使用／丟棄與歷史紀錄保護 | `In Development`（待人工驗收） |
-| 2 | **食材日期提醒** | 依使用者輸入的日期及標示類型提供提醒，不直接判定食品安全 | `In Development`（待人工驗收） |
-| 3 | **AI Agent 食譜推薦** | 透過 LLM Tool Calling 查詢庫存、搜尋食譜並說明推薦原因 | `Planned` |
-| 4 | **基本食品知識查詢** | 查詢整理自可靠來源的小型 JSON 食品保存知識庫 | `Planned` |
-| 5 | **使用與浪費統計** | 使用 Pandas 統計食材使用及丟棄紀錄，產生圖表 | `Planned` |
+| 編號 | 功能 | 目前進度與限制 |
+|---|---|---|
+| 1 | 食材庫存管理 | **已實作**：SQLite CRUD、部分使用／丟棄及歷史紀錄；跨組整合仍應再驗收 |
+| 2 | 日期提醒 | **已實作**：Use By / Best Before 分類、1/3/5/7 天提醒；不等同食品安全認證 |
+| 3 | AI Agent 食譜推薦 | **已實作並有 Gemini Live 工具紀錄**：LangGraph、數量計算、雙模式排序、缺額解釋 |
+| 4 | 食品知識與 RAG | **已建置並有功能測試**：JSON、官方來源整理及 ChromaDB；正式 RAG Live 兩題尚未完成 |
+| 5 | 食品安全前置篩選 | **已實作且工具呼叫已驗證**：依 SQLite 日期標示進行 eligible/review/blocked 分類；不保證可食用 |
+| 6 | 食物使用／浪費分析 | `analytics_service.py` 與分析介面存在；**完整 E 組功能與資料正確性仍待跨組驗收** |
+| 7 | 系統 Evaluation | **已完成初步評估**：30 題情境、25 題離線檢查通過、3 題 Gemini Live 工具選擇通過；其餘待補 |
 
-**實作範圍：** 優先完成可操作的 Web Demo、資料查詢及推薦結果；本階段不包含 YOLO 食材辨識、IoT 感測器、大型 RAG 向量資料庫或自行訓練大型模型。
+**實作範圍**：目前為以 Streamlit 展示的本機原型；尚無 YOLO 食材辨識、IoT 感測器、自行訓練大型模型、多家庭權限控制，也尚未證明實際減少食物浪費。**與原始提案不同，D 組已加入小型 ChromaDB 向量檢索（RAG）。**
 
 ## Inventory & Reminder Module
 
-本模組負責 SQLite food inventory、CRUD、Consumed / Wasted 紀錄、Date Reminder，以及 Streamlit Inventory / Reminder UI。目前功能已實作並通過自動測試，人工操作驗收尚未完成，模組狀態保持 **In Development**。
+本模組負責 SQLite food inventory、CRUD、Consumed / Wasted 紀錄、Date Reminder，以及 Streamlit Inventory / Reminder UI。此段記錄早期庫存／提醒模組的已實作內容與測試範圍；在整合後專案中仍須進行完整人工操作驗收。
 
 ```text
 Streamlit → InventoryService / ReminderService → DatabaseManager → SQLite
@@ -67,7 +69,7 @@ AI Agent → inventory_tools.py → InventoryService / ReminderService
 ReminderService → InventoryService（查詢 active 庫存）
 ```
 
-UI 不直接操作 SQLite，也不執行 SQL；`inventory_tools.py` 是 Service 的薄層 Adapter。Agent Core、Prompt、Recipe、Knowledge Base 與 Analytics 維持原有 Planned 狀態。
+UI 不直接操作 SQLite，也不執行 SQL；`inventory_tools.py` 是 Service 的薄層 Adapter。Agent、Recipe、Knowledge Base 已由 D 組後續整合；Analytics 的最終功能與數據品質仍待 E 組共同確認。
 
 ### 庫存操作
 
@@ -105,7 +107,7 @@ Use By 與 Best Before 顯示不同的中性提示，Best Before 提示其品質
 |---|---|
 | `inventory_items` | id、name、category、quantity、unit、purchase_date、expiry_date（nullable）、date_label_type、opened_date、storage_location、status、created_at、updated_at |
 | `consumption_waste_logs` | 使用／丟棄紀錄；item_id、item_name、category、quantity、unit、action_type、reason、log_date、created_at |
-| `recipe_recommendations` | **Optional / Planned**；保留原有 schema，尚未實作推薦功能 |
+| `recipe_recommendations` | **Optional**；原 schema 保留記錄用途，但 D 組推薦工具已實作；尚未驗證把推薦結果寫回此表 |
 
 預設資料庫為 `data/database/food_guardian.db`；可透過 `DATABASE_PATH` 指定其他路徑。首次進入首頁／庫存／提醒頁面自動初始化，重啟使用同一檔案保留資料。此次 Repository 無舊資料庫，因此未實作舊版 schema 的 migration。
 
@@ -133,19 +135,19 @@ soon = reminders.get_expiring_soon()
 2. 搜尋／篩選庫存後選擇食材，以獨立 dialog 編輯、記錄已使用／已丟棄，先查看剩餘數量再確認；丟棄原因可不填。刪除輸入錯誤的資料另有確認 dialog。
 3. 篩選狀態為「已使用／已丟棄」可查看 completed 紀錄，相關操作停用。
 4. 側欄選「日期提醒」，選 1／3／5／7 天，先查看已超過日期，再看即將到期項目；正常食材收在折疊區，Use By／Best Before 有不同提示。
-5. AI 餐點推薦與浪費統計保留 Under Development。
+5. AI 餐點推薦已可選擇 Gemini + LangGraph 或本地規則模式；浪費統計的整合驗收仍待完成。
 
 測試使用 pytest 的獨立 temporary SQLite database，涵蓋 CRUD、部分使用／丟棄、log、rollback、並行扣庫存、日期邊界、NULL 日期、completed 保護、重啟資料保留及 Streamlit AppTest。瀏覽器驗證亦使用 `/private/tmp` 資料庫，不污染正式資料。
 
-主要檔案：`src/constants.py`、`src/database/schema.sql`、`src/database/db_manager.py`、`src/services/inventory_service.py`、`src/services/reminder_service.py`、`src/ui/components/inventory_view.py`、`src/ui/components/reminders_view.py`、`src/agent/tools/inventory_tools.py`、`src/utils/helpers.py`、`TODO.md`。
+主要檔案：`src/constants.py`、`src/database/schema.sql`、`src/database/db_manager.py`、`src/services/inventory_service.py`、`src/services/reminder_service.py`、`src/ui/components/inventory_view.py`、`src/ui/components/reminders_view.py`、`src/agent/tools/inventory_tools.py`、`src/utils/helpers.py`。
 
-[TODO.md](TODO.md) 依各 Step 記錄實作與測試；只有通過驗證的項目才勾選。人工操作驗收仍保留未勾選，不能視為整個模組已完成。
+早期進度以 `TODO.md` 記錄；整理後分享專案未附此舊檔，正式進度以本 README 與 `docs/EVALUATION_REPORT.md` 為準。人工操作驗收尚未全部完成。
 
 ## Web Interface
 
 採用淺色、溫暖的家庭食材 Dashboard，以綠色作為主要操作色。原生 Streamlit dialog、工具列與導覽搭配集中管理的 theme 與少量排版／badge CSS；字體使用系統 fallback，不依賴外部字體下載。
 
-- **Sidebar Navigation**：首頁、食材庫存、日期提醒、AI 餐點推薦與浪費統計；後兩者維持 Under Development。
+- **Sidebar Navigation**：首頁、食材庫存、日期提醒、AI 餐點推薦與浪費統計；AI 餐點推薦已可操作；浪費統計仍待整合驗收。
 - **Home Dashboard**：目前庫存、即將到期、已超過日期與未設定日期，均為 active 食材的筆數；優先清單最多顯示 5 筆。
 - **Inventory Dashboard / CRUD**：小型 KPI、名稱搜尋、分類／保存位置／狀態篩選與重設。精簡列表供掃視，選擇食材後查看完整資料或開啟編輯 dialog。
 - **Consumed / Wasted Dialog**：輸入本次數量即顯示剩餘庫存，超額不能確認。丟棄原因顯示中文，儲存既有英文值；確認丟棄與刪除採克制的紅色樣式。
@@ -154,7 +156,7 @@ soon = reminders.get_expiring_soon()
 - **操作回饋**：欄位旁驗證、成功 toast、明確空畫面與可理解的錯誤訊息；不向一般使用者顯示 Python exception。
 - **窄畫面**：KPI 與篩選器換行，表單縱向排列；原生資料表保留水平捲動。已於 390px、768px、1440px 寬度驗證。
 
-新版 UI 需要 **Streamlit 1.66.0+**。更新既有環境後，重新啟動伺服器：
+原組員的 UI 需求記載 **Streamlit 1.66.0+**；正式安裝需以統一依賴檔與實際環境檢查為準。更新既有環境後，重新啟動伺服器：
 
 ```bash
 pip install -r requirements.txt
@@ -177,219 +179,189 @@ streamlit run src/ui/app.py
 
 其他實際畫面：[新增食材 dialog](docs/screenshots/add-dialog-desktop.png)、[使用數量預覽](docs/screenshots/consume-dialog-desktop.png)、[丟棄 dialog](docs/screenshots/waste-dialog-desktop.png)、[刪除確認](docs/screenshots/delete-dialog-desktop.png)、[390px 手機版庫存](docs/screenshots/inventory-390.png)、[手機版提醒](docs/screenshots/reminders-390.png)。
 
-驗證結果：**83 tests passed**，含原有 Backend 測試與新版 UI 流程、空畫面、對比檢查。瀏覽器操作及截圖檢視紀錄見 [UI Redesign Validation](docs/ui-redesign-validation.md)。Backend／schema／Service API 未因 UI 重設改動；原模組的人工驗收仍待完成。
+驗證結果：原始 UI 文件曾記錄 **83 tests passed**，涵蓋其當時的 Backend 與 UI 測試；此數字為**前期文件記錄，非本次合併專案重新執行的結果**。原始文件所提的 UI Redesign Validation 附件未包含在目前整理版，不能據此獨立重現瀏覽器測試。Backend／schema／Service API 未因 UI 重設改動；原模組的人工驗收與最新跨組整合仍待完成。
 
 ## 🏗️ 系統架構
 
-Food Guardian 採用分層、模組化架構，便於組員分工。AI Agent 負責理解問題與呼叫工具；資料查詢、日期計算與統計由 Python 模組執行。
+Food Guardian 採用 Streamlit + Python Service + SQLite 的分層設計。D 組以 **Gemini + LangGraph** 為 AI Agent，引導工具讀取真實庫存、計算推薦與引用食品知識；需要時可切換本地規則模式。推薦及安全判斷的關鍵數值由 Python 工具產生，不應由 LLM 任意編造。
 
 ```mermaid
 flowchart TD
-    User([家庭使用者]) <--> UI[Streamlit 網頁介面]
-
-    subgraph Presentation[使用者介面層 UI Layer]
-        UI --> ViewInv[食材庫存管理]
-        UI --> ViewRemind[日期提醒]
-        UI --> ViewAgent[AI 餐點推薦]
-        UI --> ViewAnalytics[食材浪費統計]
-    end
-
-    subgraph Services[服務層 Service Layer]
-        ViewInv --> SvcInv[庫存服務]
-        ViewRemind --> SvcRemind[提醒服務]
-        ViewAgent --> AgentCore[AI Agent 與 Tool Calling]
-        ViewAnalytics --> SvcAnalytics[統計分析服務]
-    end
-
-    subgraph Tools[Agent 工具層]
-        AgentCore <--> LLM[LLM 模型]
-        AgentCore --> ToolInv[庫存查詢工具]
-        AgentCore --> ToolRecipe[食譜匹配工具]
-        AgentCore --> ToolKB[食品知識查詢工具]
-    end
-
-    subgraph Data[資料層 Data Layer]
-        ToolInv --> SvcInv
-        ToolInv --> SvcRemind
-        SvcRemind --> SvcInv
-        SvcInv --> DBManager[DatabaseManager]
-        DBManager <--> DB[(SQLite 資料庫)]
-        SvcAnalytics <--> DB
-        ToolKB <--> KB[(JSON 食品知識庫)]
-    end
+    U[家庭使用者] --> UI[Streamlit]
+    UI --> INV[Inventory / Reminder UI]
+    UI --> CHAT[AI 餐點推薦]
+    UI --> ANA[Analytics UI]
+    INV --> SVC[InventoryService / ReminderService]
+    SVC --> SQLITE[(SQLite)]
+    CHAT --> AG[Gemini + LangGraph Agent]
+    CHAT --> LOCAL[本地規則模式]
+    AG --> TOOLS[Tool Calling]
+    LOCAL --> PORTION[Recipe / Portion Service]
+    TOOLS --> INVTOOLS[庫存與日期查詢]
+    TOOLS --> PORTION[份量計算與雙模式推薦]
+    TOOLS --> SAFE[Safety Validator]
+    TOOLS --> KNOW[食品保存知識與 RAG]
+    INVTOOLS --> SVC
+    PORTION --> SVC
+    SAFE --> SVC
+    KNOW --> JSON[JSON 來源文件]
+    KNOW --> CHROMA[(ChromaDB 索引)]
+    ANA --> SQLITE
 ```
 
-詳細設計請參閱 `docs/architecture.md`；正式的 `DESIGN.md` 將由組員於 Proposal 階段建立並持續更新。
+安全規則僅代表根據可取得的日期與已知資料進行**自動推薦前置篩選**，不等於食品安全認證。完整資料流、測試與限制見 [`DESIGN.md`](DESIGN.md) 與 [`docs/EVALUATION_REPORT.md`](docs/EVALUATION_REPORT.md)。
 
 ## 🛠️ 使用技術
 
 | 技術 / 元件 | 用途 |
 |---|---|
-| **Python 3.10+** | 系統主要程式語言 |
-| **Streamlit** | 食材管理、對話介面與統計圖表的網頁 UI |
-| **SQLite 3** | 食材庫存、使用與丟棄紀錄的本地資料庫 |
-| **Pandas / NumPy** | 資料清理、使用量與浪費紀錄統計 |
-| **LLM + Tool Calling** | 自然語言理解、查詢工具選擇與餐點推薦解釋 |
-| **JSON Knowledge Base** | 儲存食品保存基本知識與來源資訊 |
-| **Plotly** | 在 Streamlit 中呈現互動式分析圖表 |
+| Python 3.11（本機驗證環境） | 系統主要語言；實際支援版本仍需以統一 requirements 安裝結果確認 |
+| Streamlit | 庫存、日期、Agent 對話與統計介面 |
+| SQLite 3 | 庫存及使用／丟棄事件紀錄 |
+| Gemini API、LangChain Google GenAI | LLM 與工具呼叫 |
+| LangGraph | Agent 工具節點與執行流程 |
+| ChromaDB、Sentence Transformers | 小型 RAG 文件向量檢索 |
+| JSON Food Knowledge / Recipe Data | 食品保存文件、示範食譜與來源資料 |
+| Pandas、NumPy、Plotly | 分析與視覺化 |
+| Pydantic、python-dotenv | 資料結構與環境設定 |
+| pytest | 自動化測試、離線與 Live Evaluation |
+
+目前正式執行依賴以 `requirements.txt` 為準，開發及測試工具另放 `requirements-dev.txt`。是否可安裝仍須在目標環境以 `pip check` 驗證。
 
 ## 📂 專案資料夾結構
 
-以下為主要目錄；AI、知識查詢及統計仍是程式骨架。
+以下對應**整理後專案**的主要目錄；測試檔以功能命名，避免依版本號維護重複檔案。
 
 ```text
 Food-Guardian/
-├── data/
-│   ├── database/                  # SQLite 本地資料（正式資料庫檔案不提交）
-│   │   └── .gitkeep
-│   └── knowledge_base/            # 食品領域知識
-│       └── food_knowledge.sample.json
-├── docs/
-│   └── architecture.md            # 系統架構與設計草稿
+├── README.md
+├── DESIGN.md
+├── requirements.txt
+├── requirements-dev.txt
+├── .env.example
+├── .streamlit/config.toml
 ├── src/
-│   ├── constants.py               # 固定選項與中英文標籤
-│   ├── config.py                  # 專案環境設定
+│   ├── config.py
+│   ├── constants.py
 │   ├── agent/
-│   │   ├── agent_core.py          # AI Agent 核心（待開發）
-│   │   └── tools/
-│   │       ├── inventory_tools.py # 庫存查詢工具
-│   │       ├── recipe_tools.py    # 食譜查詢工具
-│   │       └── knowledge_tools.py # 知識查詢工具
-│   ├── database/
-│   │   ├── db_manager.py          # SQLite 連線與管理
-│   │   └── schema.sql             # 資料表結構
-│   ├── services/
-│   │   ├── inventory_service.py   # 庫存新增／查詢／修改／刪除
-│   │   ├── reminder_service.py    # 日期提醒
-│   │   ├── recipe_service.py      # 食譜匹配
-│   │   ├── knowledge_service.py   # 食品知識查詢
-│   │   └── analytics_service.py   # 庫存與浪費統計
-│   ├── ui/
-│   │   ├── styles.py              # 共用 UI helper 與狀態呈現
-│   │   ├── styles.css             # 排版、KPI 與 badge 的少量樣式
-│   │   ├── app.py                 # Streamlit 程式進入點
-│   │   └── components/
-│   │       ├── home_view.py       # 首頁 Dashboard
-│   │       ├── item_dialogs.py    # 新增／編輯／使用／丟棄／刪除
-│   │       ├── inventory_view.py
-│   │       ├── agent_chat_view.py
-│   │       ├── reminders_view.py
-│   │       └── analytics_view.py
-│   └── utils/
-│       └── helpers.py             # 日期等共用工具
-├── tests/
-│   ├── test_database.py           # 初始化、外鍵、連線關閉
-│   ├── test_inventory_service.py  # CRUD、使用／丟棄、交易與歷史保護
-│   ├── test_reminder_service.py   # 日期邊界及 NULL
-│   ├── test_inventory_tools.py    # Agent adapter 整合
-│   ├── test_ui.py                 # Streamlit AppTest 互動
-│   └── test_placeholder.py        # 共用日期工具測試
-├── .streamlit/config.toml         # 共用 Light Theme
-├── .env.example                   # 環境變數範例；不包含真實金鑰
-├── .gitignore                     # 排除金鑰、虛擬環境等檔案
-├── requirements.txt               # Python 套件需求
-├── LICENSE                        # MIT 授權
-├── TODO.md                        # 本模組進度與驗證紀錄
-└── README.md                      # 本說明文件
+│   │   ├── agent_core.py
+│   │   ├── gemini_graph.py
+│   │   ├── gemini_mode.py
+│   │   └── tools/{inventory_tools,recipe_tools,knowledge_tools}.py
+│   ├── database/{db_manager.py,schema.sql}
+│   ├── services/{inventory_service,reminder_service,recipe_service,
+│   │             portion_service,safety_service,knowledge_service,
+│   │             rag_service,analytics_service}.py
+│   ├── ui/app.py
+│   └── ui/components/
+├── data/
+│   ├── database/                 # 本地 SQLite 不提交
+│   ├── knowledge_base/           # 範例食譜、保存資料與來源文件
+│   └── chroma_db/                # 可在本機重建索引
+├── evaluation/
+│   ├── cases.json
+│   ├── run_evaluation.py
+│   ├── retry_handler.py
+│   ├── metrics.py
+│   └── results/
+├── scripts/build_rag_index.py
+├── tests/                       # 依功能命名的測試
+└── docs/
+    ├── EVALUATION_REPORT.md
+    ├── PRESENTATION_OUTLINE.md
+    └── screenshots/
 ```
+
+`.env`、真實 SQLite 與向量索引不包含在公開分享壓縮檔中。原始 README 引用的 `TODO.md`、`docs/architecture.md` 或 UI 驗證附件應以實際提交的檔案為準；**沒有隨專案附上的舊文件不應視為現有資產**。
 
 ## 💻 安裝與環境設定
 
-> 請使用 Python 3.10+、Streamlit 1.66+（由 requirements.txt 安裝）。庫存與提醒可獨立使用，不需 API Key；AI 等其他模組仍待開發。此工作環境已使用 Python 3.11 安裝 `requirements.txt` 並通過 `pip check`。
-
-### 1. 下載專案（Clone）
-
-```bash
-git clone https://github.com/Chen-Fanny/Food-Guardian.git
-cd Food-Guardian
-```
-
-### 2. 建立 Python 虛擬環境
-
-macOS / Linux：
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-Windows PowerShell：
+以已建立的 Conda 環境為例（Windows PowerShell）：
 
 ```powershell
-python -m venv venv
-.\venv\Scripts\Activate.ps1
+conda activate foodguardian
+python -m pip install -r requirements-dev.txt
+python -m pip check
 ```
 
-### 3. 安裝套件
+若需單獨安裝正式執行依賴，使用 `python -m pip install -r requirements.txt`。
 
-```bash
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-### 4. 設定環境變數（庫存與提醒可使用預設值）
-
-macOS / Linux：
-
-```bash
-cp .env.example .env
-```
-
-Windows PowerShell：
+複製範例環境設定：
 
 ```powershell
 Copy-Item .env.example .env
 ```
 
-依照 `.env.example` 的欄位填寫本機 API 金鑰（例如 `OPENAI_API_KEY`，實際取決於後續使用的 LLM 服務）。**請勿將 `.env` 或真實 API Key 上傳至 GitHub。**
+在**專案根目錄**的 `.env` 設定（不要將金鑰寫入 README、提交 Git 或貼在公開記錄）：
+
+```dotenv
+GOOGLE_API_KEY=填入自己的金鑰
+GEMINI_MODEL=填入目前帳戶可用的模型名稱
+AGENT_MODE=gemini
+RAG_ENABLED=true
+CHROMA_PATH=data/chroma_db
+```
+
+在 Gemini 不可使用時可選擇本地規則模式；若尚未建好索引，可先設 `RAG_ENABLED=false`。**模型名稱依 API 實際可使用結果調整，不預設所有帳戶均可使用同一模型。**
+
+如需重建 RAG 索引：
+
+```powershell
+python scripts/build_rag_index.py
+```
+
+注意：公開 ZIP 不包含個人 `.env`、真實庫存資料庫與既有索引，必須自行保留本機資料或重建。
 
 ## 🚀 執行方式
 
-> 已驗證庫存／提醒頁面及下列啟動、測試指令；整個 AI 系統尚未完成。請先啟用上方建立的虛擬環境。
+啟動網頁：
 
-啟動 Streamlit：
-
-```bash
-streamlit run src/ui/app.py
+```powershell
+python -m streamlit run src/ui/app.py
 ```
 
-執行測試：
+進行功能測試與離線評估：
 
-```bash
-pytest tests/
+```powershell
+python -m pytest tests -q
+python evaluation/run_evaluation.py
 ```
+
+需有可用的 Gemini API 金鑰，且會呼叫外部服務的 Live 多工具評估：
+
+```powershell
+python evaluation/run_evaluation.py --live --category multi_tool --limit 3 --max-retries 1
+```
+
+Live 測試可能遇到 API 503／504／429 或額度限制，請保留原始 CSV 與摘要，不要將服務失敗直接當作工具選擇錯誤。完整結果見 [`docs/EVALUATION_REPORT.md`](docs/EVALUATION_REPORT.md)。
 
 ## 🎥 Demo 展示
 
-**狀態：開發中（Under Development）**
+**狀態：AI Agent 核心 Demo 已可操作；完整團隊整合 Demo 仍待驗收。**
 
-正式的系統操作畫面、示範影片及實驗結果，將於完成主要功能後補上。
+已經實測的 D 組對話與工具情境包括：
 
-- Demo 影片：`待補`
-- 系統截圖：見 [Web Interface](#web-interface) 與 [實際截圖](docs/screenshots/)
-- 實驗結果：`待補`
+- **指定人數推薦**：兩人份番茄炒蛋示範食譜需番茄 2 個、雞蛋 4 個；測試庫存為番茄 2 個、雞蛋 3 個，工具計算**缺雞蛋 1 個**。
+- **雙模式推薦**：`ready_now` 將數量完整的高麗菜炒蛋優先；`expiry_first` 將番茄炒蛋優先，但仍清楚指出缺料。
+- **食品安全初篩**：`validate_inventory_safety_tool` 成功查詢 SQLite 的雞胸肉紀錄，回傳日期規則狀態及限制聲明。
+- **多工具 Agent**：Gemini + LangGraph Live 工具呼叫已產生可審核的 Tool Trace。
+
+既有前期 UI 截圖位於 [`docs/screenshots/`](docs/screenshots/)；最終 AI 對話截圖、完整操作影片與跨組展示仍待補充。成果數據見 [`docs/EVALUATION_REPORT.md`](docs/EVALUATION_REPORT.md)。
 
 ## 🗺️ 開發進度
 
-- [x] **Milestone 0：Proposal 與專案初始化**
-  - [x] 確立研究問題、預定功能與技術方向
-  - [x] 建立 GitHub Repository、README 與模組化程式骨架
-  - [x] 建立初版 SQLite Schema 與食品知識範例格式
-- [ ] **Milestone 1：庫存與資料庫功能**
-  - [x] 實作食材新增／查詢／修改／刪除
-  - [x] 實作日期提醒
-  - [x] 實作 Streamlit 庫存與提醒介面（AppTest 與瀏覽器自動操作已驗證）
-  - [ ] 人工操作驗收；詳細進度見 [TODO.md](TODO.md)
-- [ ] **Milestone 2：食品知識與 AI Agent**
-  - [ ] 完成 JSON 知識查詢工具
-  - [ ] 實作 LLM Tool Calling
-  - [ ] 實作依庫存推薦食譜與推薦理由
-- [ ] **Milestone 3：數據分析與成果展示**
-  - [ ] 完成食材使用與丟棄紀錄統計
-  - [ ] 完成統計 Dashboard
-  - [ ] 進行 Baseline 比較與測試
-  - [ ] 製作 Final PPT、Demo 影片與最終文件
+- [x] **Milestone 0：Proposal 與專案初始化**：研究問題、GitHub、SQLite Schema、基本網頁骨架。
+- [ ] **Milestone 1：庫存／提醒**：CRUD、日期提醒、Consumed／Wasted 已實作及有測試紀錄；最新合併版本的人工驗收尚未完成。
+- [x] **Milestone 2：D 組 AI Agent 核心實作**：Gemini + LangGraph、工具查詢、本地規則模式、食譜推薦與多意圖 Tool Calling。
+- [x] **Milestone 3：D 組份量與安全邏輯**：`portion_service`、`safety_service`、雙模式排序與來源限制說明。
+- [ ] **Milestone 4：RAG 完整驗收**：已有 ChromaDB/JSON 文件與功能測試；兩題 Live RAG 及引用正確性人工審核仍待完成。
+- [ ] **Milestone 5：資料分析與跨組驗收**：E 組 Dashboard、資料一致性與完整展示待共同確認。
+- [ ] **Milestone 6：Evaluation 與成果展示**：
+  - [x] 30 題情境資料集；離線 25 PASS、5 NOT_RUN。
+  - [x] 最新有效 Gemini Live 3/3 PASS；1 次額外重試，成功回應平均 11.71 秒。
+  - [ ] RAG Live、內容人工評分、跨組情境測試、期末 PPT 與 Demo 影片。
 
+> **關於測試數字**：前期 README 中的 UI **83 tests passed**、整理版的測試執行紀錄與 D 組 Evaluation 的 **25 PASS / Live 3 PASS** 是不同時間、不同範圍的測試，不能加總成整體通過題數或宣稱系統整體準確率 100%。
 
 ## 📄 授權
 
@@ -397,6 +369,4 @@ pytest tests/
 
 ---
 
-## 📄 License
 
-This project is licensed under the [MIT License](LICENSE) — see the LICENSE file for details.

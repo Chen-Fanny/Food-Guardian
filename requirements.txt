@@ -1,22 +1,27 @@
-# ==============================================================================
-# Food Guardian Project Dependencies (Proposal / Initial Stage)
-# ==============================================================================
+# Food Guardian - unified runtime requirements (Python 3.11+)
+# C / D / E team integration
 
-# Web Interface & Interactive Dashboard
-streamlit>=1.66.0  # Verified native dialog state, responsive containers and theme
+# Web interface
+streamlit>=1.66.0,<2
 
-# Data Manipulation & Analytics
-pandas>=2.2.0
-numpy>=1.26.0
+# Data handling and analytics
+pandas>=2.2.0,<3
+numpy>=1.26.0,<3
+plotly>=5.20.0,<7
 
-# LLM Integration & Structured Tools (Planned)
-openai>=1.14.0
-pydantic>=2.6.0
-python-dotenv>=1.0.1
+# Configuration and structured data
+python-dotenv>=1.0.1,<2
+pydantic>=2.6.0,<3
 
-# Interactive Visualizations
-plotly>=5.20.0
+# Preserve compatibility with the original team project
+openai>=1.14.0,<3
 
-# Quality Assurance & Testing
-pytest>=8.1.0
-flake8>=7.0.0
+# Gemini + LangGraph agent
+langgraph>=1.0,<2
+langchain-core>=1.0,<2
+langchain-google-genai>=3.0,<5
+google-genai>=1.0,<3
+
+# RAG knowledge base
+chromadb>=1.0,<3
+sentence-transformers>=3.0,<6

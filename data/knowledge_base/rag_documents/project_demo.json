@@ -1,0 +1,4 @@
+[
+  {"id":"demo-tomato","title":"專案示範：食材到期提醒","content":"到期提醒是庫存管理功能，不表示食材必定安全或已經變質。應確認包裝日期標示類型與保存條件。", "source_label":"Food Guardian 專案示範內容（非官方）", "source_url":"", "verified":false},
+  {"id":"demo-recipe","title":"專案示範：食譜推薦分數","content":"Food Guardian 食譜分數為庫存配對與到期優先的規則式分數，不代表料理安全性或營養評分。食譜尚未完整驗證數量與單位。", "source_label":"Food Guardian 專案示範內容（非官方）", "source_url":"", "verified":false}
+]

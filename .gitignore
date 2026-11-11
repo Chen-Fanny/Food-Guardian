@@ -44,3 +44,10 @@ desktop.ini
 # Logs
 *.log
 logs/
+
+# Regenerable RAG embeddings/index (retain source JSON)
+data/chroma_db/*
+!data/chroma_db/.gitkeep
+# Locally generated evaluation run history
+evaluation/results/*_20*.csv
+evaluation/results/*_20*.json
