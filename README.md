@@ -7,6 +7,7 @@
 [![Framework](https://img.shields.io/badge/UI-Streamlit-red.svg)](https://streamlit.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+proposal yt連結:https://youtu.be/osOEFfAaMqM?si=6QalsSItzezyGK8t
 
 ## 📌 目錄
 
